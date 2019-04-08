@@ -16,15 +16,22 @@ cv2.imshow("suavizado", gauss)
 # Detectamos los bordes con Canny
 canny = cv2.Canny(gauss, 50, 150)
  
-cv2.imshow("canny", canny)
+#cv2.imshow("canny", canny)
 
-# Buscamos los contornos
-(contornos,_) = cv2.findContours(canny.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
- 
-# Mostramos el número de monedas por consola
-print("He encontrado {} objetos".format(len(contornos)))
- 
-cv2.drawContours(original,contornos,-1,(0,0,255), 2)
-cv2.imshow("contornos", original)
- 
+newimg = cv2.resize(canny, (50,50))
+cv2.imshow("newimg", newimg)
+
 cv2.waitKey(0)
+cv2. imwrite ("resizeimg.jpg", newimg)
+
+
+
+## Buscamos los contornos
+#(contornos,_) = cv2.findContours(canny.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+# 
+## Mostramos el número de monedas por consola
+#print("He encontrado {} objetos".format(len(contornos)))
+# 
+#cv2.drawContours(original,contornos,-1,(0,0,255), 2)
+#cv2.imshow("contornos", original)
+ 
