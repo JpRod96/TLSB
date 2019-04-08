@@ -21,9 +21,12 @@ while(cap.isOpened()):
         if cutOn >= frameCount:
             break
 
+numberOfFrame = 1
 for photo in listOfFrames:
     cv2.imshow('photo',photo)
+    cv2.imwrite ("photo" + str(numberOfFrame) + ".jpg", photo)
     cv2.waitKey(0)
+    numberOfFrame += 1
 
 cap.release()
 cv2.destroyAllWindows()
