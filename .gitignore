@@ -451,3 +451,5 @@ MigrationBackup/
 *.jpg
 #binaries
 *.h5
+#videos
+*.mp4
