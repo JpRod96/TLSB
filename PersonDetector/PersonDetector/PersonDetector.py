@@ -15,20 +15,23 @@ class PersonDetector:
         self.detector.setModelPath( os.path.join(self.execution_path , "resnet50_coco_best_v2.0.1.h5"))
         self.detector.loadModel()
 
-    def detectPerson(self, imageName):
+    def detectPerson(self, imageName, extension):
         custom_objects = self.detector.CustomObjects(person=True)
-        detections = self.detector.detectCustomObjectsFromImage(custom_objects=custom_objects, input_image=os.path.join(self.execution_path , imageName), output_image_path=os.path.join(self.execution_path , "new"+imageName), minimum_percentage_probability=55)
+        detections = self.detector.detectCustomObjectsFromImage(custom_objects=custom_objects,
+                                                               input_image=os.path.join(self.execution_path , imageName + extension),
+                                                               output_image_path=os.path.join(self.execution_path , imageName + "new" + extension),
+                                                               minimum_percentage_probability=55)
         highestPercentageDetection = self.getDetectionWHighestPercentage(detections)
-        self.cropImage(highestPercentageDetection["box_points"], imageName)
+        self.cropImage(highestPercentageDetection["box_points"], imageName, extension)
 
-    def cropImage(self, array, imageName):
-        image = cv2.imread(imageName)
+    def cropImage(self, array, imageName, extension):
+        image = cv2.imread(imageName + extension)
         x0=self.cleanNumber(array[0])
         y0=self.cleanNumber(array[1])
         x1=self.cleanNumber(array[2])
         y1=self.cleanNumber(array[3])
         cropped = image[y0:y1, x0:x1]
-        cv2.imwrite("t"+imageName, cropped)    
+        cv2.imwrite(imageName + "PD" + extension, cropped)    
 
     def cleanNumber(self, number):
         return number if number>0 else 1

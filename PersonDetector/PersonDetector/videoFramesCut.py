@@ -19,22 +19,19 @@ while(cap.isOpened()):
         listOfFrames.append(frame)
         # Corte en el frame:
         cutOn = frameCount/5 + cont
-        #print(cont)
     else:
         if cutOn >= frameCount:
             break
 
 numberOfFrame = 1
 for photo in listOfFrames:
-    #cv2.imshow('photo',photo)
     imageName = PHOTO + str(numberOfFrame) + JPG_EXTENSION;
     cv2.imwrite (imageName, photo)
-    #cv2.waitKey(0)
     numberOfFrame += 1
 
 cap.release()
 detector = PersonDetector();
 for x in range(1, 6):
-    imageName = PHOTO + str(x) + JPG_EXTENSION
-    print(imageName)
-    detector.detectPerson(imageName)
+    imageName = PHOTO + str(x)
+    print(imageName + JPG_EXTENSION)
+    detector.detectPerson(imageName, JPG_EXTENSION)
