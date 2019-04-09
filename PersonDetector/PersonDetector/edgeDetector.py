@@ -3,9 +3,9 @@ import cv2
 
 class EdgeDetector:
     
-    def getEdges(self, imageName):
+    def getEdges(self, imageName, extension):
         # Cargamos la imagen
-        original = cv2.imread(imageName)
+        original = cv2.imread(imageName + extension)
  
         # Convertimos a escala de grises
         gris = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
@@ -21,7 +21,7 @@ class EdgeDetector:
         newimg = cv2.resize(canny, (50,50))
 
         cv2.waitKey(0)
-        cv2. imwrite ("Final" + imageName, newimg)
+        cv2. imwrite (imageName + "edges" + extension, newimg)
 
 
 

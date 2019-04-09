@@ -22,7 +22,7 @@ class PersonDetector:
                                                                output_image_path=os.path.join(self.execution_path , imageName + "new" + extension),
                                                                minimum_percentage_probability=55)
         highestPercentageDetection = self.getDetectionWHighestPercentage(detections)
-        self.cropImage(highestPercentageDetection["box_points"], imageName, extension)
+        return self.cropImage(highestPercentageDetection["box_points"], imageName, extension)
 
     def cropImage(self, array, imageName, extension):
         image = cv2.imread(imageName + extension)
@@ -31,7 +31,9 @@ class PersonDetector:
         x1=self.cleanNumber(array[2])
         y1=self.cleanNumber(array[3])
         cropped = image[y0:y1, x0:x1]
-        cv2.imwrite(imageName + "PD" + extension, cropped)    
+        treatedImageName=imageName + "PD"
+        cv2.imwrite(treatedImageName + extension, cropped)  
+        return treatedImageName
 
     def cleanNumber(self, number):
         return number if number>0 else 1

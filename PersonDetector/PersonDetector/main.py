@@ -31,7 +31,9 @@ for photo in listOfFrames:
 
 cap.release()
 detector = PersonDetector();
+listOfTreatedImages = []
 for x in range(1, 6):
     imageName = PHOTO + str(x)
     print(imageName + JPG_EXTENSION)
-    detector.detectPerson(imageName, JPG_EXTENSION)
+    treatedImageName = detector.detectPerson(imageName, JPG_EXTENSION)
+    listOfTreatedImages.append(treatedImageName)
