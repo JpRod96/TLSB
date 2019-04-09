@@ -1,6 +1,9 @@
 import numpy as np
 import cv2
+from PersonDetector import PersonDetector
 
+PHOTO="photo"
+JPG_EXTENSION=".jpg"
 cap = cv2.VideoCapture('omg.mp4')
 #numero total de frames
 frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -23,10 +26,15 @@ while(cap.isOpened()):
 
 numberOfFrame = 1
 for photo in listOfFrames:
-    cv2.imshow('photo',photo)
-    cv2.imwrite ("photo" + str(numberOfFrame) + ".jpg", photo)
-    cv2.waitKey(0)
+    #cv2.imshow('photo',photo)
+    imageName = PHOTO + str(numberOfFrame) + JPG_EXTENSION;
+    cv2.imwrite (imageName, photo)
+    #cv2.waitKey(0)
     numberOfFrame += 1
 
 cap.release()
-cv2.destroyAllWindows()
+detector = PersonDetector();
+for x in range(1, 6):
+    imageName = PHOTO + str(x) + JPG_EXTENSION
+    print(imageName)
+    detector.detectPerson(imageName)
