@@ -3,7 +3,7 @@ import cv2
 
 class EdgeDetector:
     
-    def getEdges(self, imageName, extension):
+    def getImageEdges(self, imageName, extension):
         # Cargamos la imagen
         original = cv2.imread(imageName + extension)
  

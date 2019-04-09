@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from PersonDetector import PersonDetector
+from edgeDetector import EdgeDetector
 
 PHOTO="photo"
 JPG_EXTENSION=".jpg"
@@ -37,3 +38,7 @@ for x in range(1, 6):
     print(imageName + JPG_EXTENSION)
     treatedImageName = detector.detectPerson(imageName, JPG_EXTENSION)
     listOfTreatedImages.append(treatedImageName)
+
+edgeDetector = EdgeDetector()
+for imageName in listOfTreatedImages:
+    edgeDetector.getImageEdges(imageName, JPG_EXTENSION)
