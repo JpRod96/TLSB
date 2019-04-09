@@ -1,22 +1,41 @@
 from imageai.Detection import ObjectDetection
 import os
+import numpy as np
+import cv2
+
 class PersonDetector:
 
+    detector=None
+    execution_path=None
+
+    def __init__(self): 
+        self.execution_path = os.getcwd()
+        self.detector = ObjectDetection()
+        self.detector.setModelTypeAsRetinaNet()
+        self.detector.setModelPath( os.path.join(self.execution_path , "resnet50_coco_best_v2.0.1.h5"))
+        self.detector.loadModel()
+
     def detectPerson(self, imageName):
-        execution_path = os.getcwd()
-        detector = ObjectDetection()
-        detector.setModelTypeAsRetinaNet()
-        detector.setModelPath( os.path.join(execution_path , "resnet50_coco_best_v2.0.1.h5"))
-        detector.loadModel()
+        custom_objects = self.detector.CustomObjects(person=True)
+        detections = self.detector.detectCustomObjectsFromImage(custom_objects=custom_objects, input_image=os.path.join(self.execution_path , imageName), output_image_path=os.path.join(self.execution_path , "new"+imageName), minimum_percentage_probability=55)
+        highestPercentageDetection = self.getDetectionWHighestPercentage(detections)
+        self.cropImage(highestPercentageDetection["box_points"], imageName)
 
-        custom_objects = detector.CustomObjects(person=True)
-        detections = detector.detectCustomObjectsFromImage(custom_objects=custom_objects, input_image=os.path.join(execution_path , imageName), output_image_path=os.path.join(execution_path , imageName + "new.jpg"), minimum_percentage_probability=55)
+    def cropImage(self, array, imageName):
+        image = cv2.imread(imageName)
+        x0=self.cleanNumber(array[0])
+        y0=self.cleanNumber(array[1])
+        x1=self.cleanNumber(array[2])
+        y1=self.cleanNumber(array[3])
+        cropped = image[y0:y1, x0:x1]
+        cv2.imwrite("t"+imageName, cropped)    
 
+    def cleanNumber(self, number):
+        return number if number>0 else 1
+
+    def getDetectionWHighestPercentage(self, detections):
+        highest = detections[0]
         for detection in detections:
-            print(detection["name"] , " : " , detection["percentage_probability"], ":", detection["box_points"])
-
-
-        #detections, extracted_images = detector.detectObjectsFromImage(input_image=os.path.join(execution_path , "image.jpg"), 
-        #                                                               output_image_path=os.path.join(execution_path, "imagenew.jpg"), 
-        #                                                               extract_detected_objects=True)
-        
+            highest = detection if detection["percentage_probability"] > highest["percentage_probability"] else highest
+        return highest
+    
