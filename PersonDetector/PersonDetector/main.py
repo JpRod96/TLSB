@@ -5,7 +5,8 @@ from edgeDetector import EdgeDetector
 
 PHOTO="photo"
 JPG_EXTENSION=".jpg"
-cap = cv2.VideoCapture('omg.mp4')
+cap = cv2.VideoCapture('sample.mp4')
+print("Video loaded")
 #numero total de frames
 frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 

@@ -21,7 +21,7 @@ class EdgeDetector:
         newimg = cv2.resize(canny, (50,50))
 
         cv2.waitKey(0)
-        cv2. imwrite (imageName + "edges" + extension, newimg)
+        cv2. imwrite (imageName + "edges" + extension, canny)
 
 
 
