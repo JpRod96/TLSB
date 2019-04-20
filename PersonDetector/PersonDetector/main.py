@@ -3,6 +3,7 @@ import cv2
 from PersonDetector import PersonDetector
 from edgeDetector import EdgeDetector
 from videoCutter import VideoCutter
+import util
 
 FRAMES_NRO=5
 PHOTO = "photo"
@@ -29,11 +30,16 @@ def process():
     edgeDetector = EdgeDetector()
 
     x=0;
+    edgeImages=[]
     for frame in frames:
         imageName = PHOTO + str(x)
         print(imageName + JPG_EXTENSION)
         treatedImage = detector.detectPersonFronNumpy(frame)
-        edgeDetector.getImageEdgesFromNumpy(treatedImage, imageName+"Final", JPG_EXTENSION)
+        edgeImages.append(edgeDetector.getImageEdgesFromNumpy(treatedImage))
         x=x+1
+    
+    data = util.combineImages(edgeImages)
+    util.saveImage(data, "finalImage", ".jpg")
+
 
 process()
