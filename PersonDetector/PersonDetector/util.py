@@ -10,3 +10,12 @@ def combineImages(array):
 
 def saveImage(npImage, imageName, extension):
     cv2.imwrite(imageName +  extension, npImage)
+
+def getNameOfFileByPath(pathString):
+    tokens = pathString.split("/")
+    tokensSize = len(tokens)
+    file = tokens[tokensSize-1]
+    tokens = file.split(".")
+    fileName = tokens[0]
+    fileExtension = "."+tokens[1]
+    return fileName
