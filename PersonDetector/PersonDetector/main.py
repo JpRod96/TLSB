@@ -33,13 +33,10 @@ for photo in listOfFrames:
 
 cap.release()
 detector = PersonDetector();
+edgeDetector = EdgeDetector()
 listOfTreatedImages = []
 for x in range(1, 6):
     imageName = PHOTO + str(x)
     print(imageName + JPG_EXTENSION)
     treatedImageName = detector.detectPerson(imageName, JPG_EXTENSION)
-    listOfTreatedImages.append(treatedImageName)
-
-edgeDetector = EdgeDetector()
-for imageName in listOfTreatedImages:
-    edgeDetector.getImageEdges(imageName, JPG_EXTENSION)
+    edgeDetector.getImageEdges(treatedImageName, JPG_EXTENSION)

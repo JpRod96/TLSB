@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 
 class EdgeDetector:
+    PICTURE_SIZE=200
     
     def getImageEdges(self, imageName, extension):
         # Cargamos la imagen
@@ -18,29 +19,38 @@ class EdgeDetector:
  
         #cv2.imshow("canny", canny)
 
-        newimg = cv2.resize(canny, (50,50))
+        squarePic = self.make_square(canny)
+
+        resizedImg = cv2.resize(squarePic, (self.PICTURE_SIZE, self.PICTURE_SIZE))
 
         cv2.waitKey(0)
-        cv2. imwrite (imageName + "edges" + extension, canny)
+        cv2.imwrite(imageName + "edges" + extension, resizedImg)
 
+    def make_square(self, im):
+        imgHeight, imgWidth = im.shape;
+        desired_size = max([imgHeight, imgWidth])
 
-    def squaringPicture(self, img):
+        old_size = im.shape[:2] # old_size is in (height, width) format
 
-        #get size
-        height, width, channels = img.shape
-        print (in_img,height, width, channels)
-        # Create a black image
-        x = height if height > width else width
-        y = height if height > width else width
-        square= np.zeros((x,y,3), np.uint8)
-        #
-        #This does the job
-        #
-        square[(y-height)/2:y-(y-height)/2, (x-width)/2:x-(x-width)/2] = img
-        cv2.imwrite(out_img,square)
-        cv2.imshow("original", img)
-        cv2.imshow("black square", square)
-        cv2.waitKey(0)
+        ratio = float(desired_size)/max(old_size)
+        new_size = tuple([int(x*ratio) for x in old_size])
+
+        # new_size should be in (width, height) format
+        im = cv2.resize(im, (new_size[1], new_size[0]))
+
+        delta_w = desired_size - new_size[1]
+        delta_h = desired_size - new_size[0]
+        top, bottom = delta_h//2, delta_h-(delta_h//2)
+        left, right = delta_w//2, delta_w-(delta_w//2)
+
+        color = [0, 0, 0]
+        return cv2.copyMakeBorder(im, 
+                                    top, 
+                                    bottom, 
+                                    left, 
+                                    right, 
+                                    cv2.BORDER_CONSTANT,
+                                    value=color)
 
         ## Buscamos los contornos
         #(contornos,_) = cv2.findContours(canny.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
