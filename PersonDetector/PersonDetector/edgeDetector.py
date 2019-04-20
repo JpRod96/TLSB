@@ -9,21 +9,16 @@ class EdgeDetector:
         original = cv2.imread(imageName + extension)
  
         # Convertimos a escala de grises
-        gris = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
+        self.getImageEdgesFromNumpy(original, imageName, extension)
 
+    def getImageEdgesFromNumpy(self, image, imageName, extension):
+        gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         # Aplicar suavizado Gaussiano
         gauss = cv2.GaussianBlur(gris, (5 ,5), 0)
-
         # Detectamos los bordes con Canny
         canny = cv2.Canny(gauss, 50, 150)
- 
-        #cv2.imshow("canny", canny)
-
         squarePic = self.make_square(canny)
-
         resizedImg = cv2.resize(squarePic, (self.PICTURE_SIZE, self.PICTURE_SIZE))
-
-        cv2.waitKey(0)
         cv2.imwrite(imageName + "edges" + extension, resizedImg)
 
     def make_square(self, im):
