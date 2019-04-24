@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import util
 
 class VideoCutter:
     PHOTO="photo"
@@ -7,7 +8,8 @@ class VideoCutter:
 
     def cutVideo(self, videoPath, outFramesNumber):
         cap = cv2.VideoCapture(videoPath)
-        print("Video loaded")
+        videoName = util.getLastTokenOfPath(videoPath)
+        print("Video " + videoName[0] + " loaded")
         #numero total de frames
         frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 

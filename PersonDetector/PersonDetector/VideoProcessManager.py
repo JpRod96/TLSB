@@ -5,12 +5,11 @@ import util
 
 class VideoProcessManager:
 
-    framesNro = None
     videoProcessor = None
     MP4_EXTENSION = "mp4"
 
-    def __init__(self, framesNro):
-        self.framesNro = framesNro
+    def __init__(self, framesNro, finalPicSize):
+        self.videoProcessor = VideoProcessor(framesNro, finalPicSize)
 
     def isGivenFileMP4File(self, file):
         finalToken = util.getLastTokenOfPath(file)
@@ -21,13 +20,12 @@ class VideoProcessManager:
         return len(finalToken) == 1
     
     def processPath(self, path):
-        self.videoProcessor = VideoProcessor()
         if self.isGivenPathADir(path) :
             videoFiles = self.getVideoFilesFromDirectory(path)
             for videoFile in videoFiles:
-                self.videoProcessor.process(path + "/" + videoFile, self.framesNro)
+                self.videoProcessor.process(path + "/" + videoFile)
         else :
-            self.videoProcessor.process(path, self.framesNro)
+            self.videoProcessor.process(path)
 
     def getVideoFilesFromDirectory(self, path):
         files = [f for f in listdir(path) if isfile(join(path, f))]

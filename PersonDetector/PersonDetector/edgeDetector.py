@@ -2,7 +2,10 @@ import numpy as np
 import cv2
 
 class EdgeDetector:
-    PICTURE_SIZE=200
+    pictureSize = None
+
+    def __init__(self, pictureSize):
+        self.pictureSize = pictureSize
     
     def getImageEdges(self, imageName, extension):
         # Cargamos la imagen
@@ -19,7 +22,7 @@ class EdgeDetector:
         # Detectamos los bordes con Canny
         canny = cv2.Canny(gauss, 50, 150)
         squarePic = self.make_square(canny)
-        resizedImg = cv2.resize(squarePic, (self.PICTURE_SIZE, self.PICTURE_SIZE))
+        resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
         return resizedImg
 
     def make_square(self, im):
