@@ -1,9 +1,9 @@
 from VideoProcessManager import VideoProcessManager
 import util
 
-framesNro=5
+framesNro=2
 picSize=300
 
 vid = VideoProcessManager(framesNro, picSize)
-#vid.processPath("C:/Users/Jp.SANDRO-HP/Downloads/gestos/luz")
-vid.processPath("C:/Users/Nicolas/Desktop/VideosDataset/BAÑO5")
+vid.processPath("C:/Users/Jp.SANDRO-HP/Downloads/gestos/luz")
+#vid.processPath("C:/Users/Nicolas/Desktop/VideosDataset/BAÑO5")

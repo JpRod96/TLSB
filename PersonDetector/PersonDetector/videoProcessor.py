@@ -35,7 +35,7 @@ class VideoProcessor:
         x=1;
         edgeImages=[]
         for frame in frames:
-            print("Processing frame number"+ str(x) +"...")
+            print("Processing frame number "+ str(x) +"...")
             try:
                 treatedImage = self.detector.detectPersonFronNumpy(frame)
                 edgeImages.append(self.edgeDetector.getImageEdgesFromNumpy(treatedImage))
@@ -43,10 +43,12 @@ class VideoProcessor:
             except:
                 print("Human not found on frame number "+ str(x))
             x=x+1
-        
-        print("Concatenating all images")
-        directory = util.getPathOfVideoDirectory(videoPath)
-        data = util.combineImages(edgeImages)
-        util.saveImage(data, fileName+"Edges", ".jpg")
-        util.saveImageToPath(data, fileName+"Edges", ".jpg", directory)
-        print("Done.")
+        if(len(edgeImages)>0):
+            print("Concatenating all images")
+            directory = util.getPathOfVideoDirectory(videoPath)
+            data = util.combineImages(edgeImages)
+            util.saveImage(data, fileName+"Edges", ".jpg")
+            util.saveImageToPath(data, fileName+"Edges", ".jpg", directory)
+            print("Done.")
+        else:
+            print("Unsuccesful process, theres no human on the video clip "+ videoPath +"\n")
