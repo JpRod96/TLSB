@@ -21,7 +21,11 @@ class VideoCutter:
             ret, frame = cap.read()
             cont += 1
             if cont >= cutOn:
-                listOfFrames.append(frame)
+                #Rotar imagen
+                rows,cols,dimensions = frame.shape
+                rotationParameters = cv2.getRotationMatrix2D((cols/2,rows/2),270,1)
+                rotatedFrame = cv2.warpAffine(frame,rotationParameters,(cols,rows))
+                listOfFrames.append(rotatedFrame)
                 # Corte en el frame:
                 cutOn = frameCount/outFramesNumber + cont
             else:

@@ -20,7 +20,7 @@ class EdgeDetector:
         # Aplicar suavizado Gaussiano
         gauss = cv2.GaussianBlur(gris, (5 ,5), 0)
         # Detectamos los bordes con Canny
-        canny = cv2.Canny(gauss, 50, 150)
+        canny = cv2.Canny(gauss, 30, 90)
         squarePic = self.make_square(canny)
         resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
         return resizedImg

@@ -18,11 +18,16 @@ canny = cv2.Canny(gauss, 50, 150)
  
 #cv2.imshow("canny", canny)
 
-newimg = cv2.resize(canny, (50,50))
-cv2.imshow("newimg", newimg)
+#newimg = cv2.resize(canny, (50,50))
+#cv2.imshow("newimg", newimg)
+print(canny.shape)
+rows,cols = canny.shape
 
+M = cv2.getRotationMatrix2D((cols/2,rows/2),270,1)
+dst = cv2.warpAffine(canny,M,(cols,rows))
+print(dst.shape)
 cv2.waitKey(0)
-cv2. imwrite ("resizeimg.jpg", newimg)
+cv2. imwrite ("resizeimg.jpg", dst)
 
 
 

@@ -44,6 +44,6 @@ class VideoProcessor:
         print("Concatenating all images")
         directory = util.getPathOfVideoDirectory(videoPath)
         data = util.combineImages(edgeImages)
-        #util.saveImage(data, fileName+"Edges", ".jpg")
+        util.saveImage(data, fileName+"Edges", ".jpg")
         util.saveImageToPath(data, fileName+"Edges", ".jpg", directory)
         print("Done.")
