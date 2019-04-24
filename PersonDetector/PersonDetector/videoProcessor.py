@@ -24,7 +24,7 @@ class VideoProcessor:
             edgeDetector.getImageEdges(treatedImageName, self.fileExtension)
 
     def process(self, videoPath, framesNro):
-        fileName = util.getNameOfFileByPath(videoPath)
+        fileName = util.getLastTokenOfPath(videoPath)[0]
         videoCutter =  VideoCutter()
         frames = videoCutter.cutVideo(videoPath, framesNro)
         detector = PersonDetector()
