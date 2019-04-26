@@ -8,8 +8,8 @@ class VideoProcessManager:
     videoProcessor = None
     MP4_EXTENSION = "mp4"
 
-    def __init__(self, framesNro, finalPicSize):
-        self.videoProcessor = VideoProcessor(framesNro, finalPicSize)
+    def __init__(self, framesNro, finalPicSize, rotate):
+        self.videoProcessor = VideoProcessor(framesNro, finalPicSize, rotate)
 
     def isGivenFileMP4File(self, file):
         finalToken = util.getLastTokenOfPath(file)

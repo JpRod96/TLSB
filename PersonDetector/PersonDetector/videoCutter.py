@@ -6,7 +6,7 @@ class VideoCutter:
     PHOTO="photo"
     JPG_EXTENSION=".jpg"
 
-    def cutVideo(self, videoPath, outFramesNumber):
+    def cutVideo(self, videoPath, outFramesNumber, rotate):
         cap = cv2.VideoCapture(videoPath)
         videoName = util.getLastTokenOfPath(videoPath)
         print("Video " + videoName[0] + " loaded")
@@ -22,10 +22,13 @@ class VideoCutter:
             cont += 1
             if cont >= cutOn:
                 #Rotar imagen
-                rows,cols,dimensions = frame.shape
-                rotationParameters = cv2.getRotationMatrix2D((cols/2,rows/2),270,1)
-                rotatedFrame = cv2.warpAffine(frame,rotationParameters,(cols,rows))
-                listOfFrames.append(rotatedFrame)
+                if rotate:
+                    rows,cols,dimensions = frame.shape
+                    rotationParameters = cv2.getRotationMatrix2D((cols/2,rows/2),270,1)
+                    rotatedFrame = cv2.warpAffine(frame,rotationParameters,(cols,rows))
+                    listOfFrames.append(rotatedFrame)
+                else:
+                    listOfFrames.append(frame)
                 # Corte en el frame:
                 cutOn = frameCount/outFramesNumber + cont
             else:
