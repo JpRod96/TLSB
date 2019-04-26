@@ -453,3 +453,4 @@ MigrationBackup/
 *.h5
 #videos
 *.mp4
+/PersonDetector/PersonDetector/.png

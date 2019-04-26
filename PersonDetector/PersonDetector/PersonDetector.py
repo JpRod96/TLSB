@@ -35,7 +35,10 @@ class PersonDetector:
                                                                 input_image=image,
                                                                 minimum_percentage_probability=55)
         highestPercentageDetection = self.getDetectionWHighestPercentage(detections)
-        return self.cropImage(highestPercentageDetection["box_points"], image)
+        if(highestPercentageDetection != None):
+            return self.cropImage(highestPercentageDetection["box_points"], image)
+        else:
+            raise Exception('No human were found')
 
     def cropImage(self, array, image):
         x0=self.cleanNumber(array[0])
@@ -48,8 +51,10 @@ class PersonDetector:
         return number if number>0 else 1
 
     def getDetectionWHighestPercentage(self, detections):
-        highest = detections[0]
-        for detection in detections:
-            highest = detection if detection["percentage_probability"] > highest["percentage_probability"] else highest
+        highest = None
+        if(len(detections)>0):
+            highest = detections[0]
+            for detection in detections:
+                highest = detection if detection["percentage_probability"] > highest["percentage_probability"] else highest
         return highest
     
