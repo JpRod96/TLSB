@@ -1,11 +1,13 @@
 from VideoProcessManager import VideoProcessManager
 import util
 
-framesNro = 3
+framesNro = 5
 picSize = 200
 rotate = True
+# typeOfCut = "Constant" || "Probabilistic"
+typeOfCut = "Constant"
 
-vid = VideoProcessManager(framesNro, picSize, rotate)
+vid = VideoProcessManager(framesNro, picSize, rotate, typeOfCut)
 #vid.processPath("C:/Users/Jp.SANDRO-HP/Downloads/gestos/luz")
 
 vid.processPath("C:/Users/Nicolas/Desktop/VideosDataset/BAÑO1")

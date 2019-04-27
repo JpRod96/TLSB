@@ -9,11 +9,13 @@ class VideoProcessor:
     framesNro = None
     detector = None
     rotate = None
+    typeOfCut = None
     edgeDetector = None
 
-    def __init__(self, framesNro, finalPicSize, rotate):
+    def __init__(self, framesNro, finalPicSize, rotate, typeOfCut):
         self.framesNro = framesNro
         self.rotate = rotate
+        self.typeOfCut = typeOfCut
         self.detector = PersonDetector()
         self.edgeDetector = EdgeDetector(finalPicSize)
 
@@ -21,7 +23,7 @@ class VideoProcessor:
         fileExtension = ".jpg"
         fileName = util.getNameOfFileByPath(videoPath)
         videoCutter =  VideoCutter()
-        frames = videoCutter.cutVideo(videoPath, self.framesNro, self.rotate)
+        frames = videoCutter.cutVideo(videoPath, self.framesNro, self.rotate, self.typeOfCut)
 
         for x in range(1, self.framesNro+1):
             imageName = self.fileName + str(x)
@@ -32,7 +34,7 @@ class VideoProcessor:
     def process(self, videoPath):
         fileName = util.getLastTokenOfPath(videoPath)[0]
         videoCutter =  VideoCutter()
-        frames = videoCutter.cutVideo(videoPath, self.framesNro, self.rotate)
+        frames = videoCutter.cutVideo(videoPath, self.framesNro, self.rotate, self.typeOfCut)
 
         x=1;
         edgeImages=[]
