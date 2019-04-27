@@ -1,9 +1,9 @@
 from VideoProcessManager import VideoProcessManager
 import util
 
-framesNro = 5
-picSize = 300
-rotate = False
+framesNro = 3
+picSize = 200
+rotate = True
 
 vid = VideoProcessManager(framesNro, picSize, rotate)
 #vid.processPath("C:/Users/Jp.SANDRO-HP/Downloads/gestos/luz")
