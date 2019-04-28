@@ -30,7 +30,7 @@ model.add(Dense(4))
 model.add(Activation('sigmoid'))
 
 model.compile(optimizer='adam', 
-              loss='sparse_categorical_crossentropy',
+              loss='categorical_crossentropy',
               metrics=['accuracy'])
 #print(model.summary())
 #model = keras.Sequential([
