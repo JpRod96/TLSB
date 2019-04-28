@@ -33,7 +33,6 @@ class VideoCutter:
                 # Corte en el frame:
                 if typeOfCut == "Constant":
                     cutOn = frameCount/outFramesNumber + cont
-                    print("CUT ON: " + str(cutOn))
                 if typeOfCut == "Probabilistic":
                     cutOn = frameCount/outFramesNumber + cont
                     cutOn = self.getRandomCut(cutOn, constantForProbablity)
