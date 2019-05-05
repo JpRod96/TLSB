@@ -25,12 +25,13 @@ class EdgeDetector:
         #resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
 
         #PRUEBA
-        med_val = np.median(image)
-        lower = int(max(0,0.7*med_val))
-        upper = int(min(255,1.3*med_val))
-        blurred_img = cv2.blur(image,(5,5))
-        canny = cv2.Canny(blurred_img, lower, upper)
-        squarePic = self.make_square(canny)
+        #med_val = np.median(image)
+        #lower = int(max(0,0.7*med_val))
+        #upper = int(min(255,1.3*med_val))
+        #blurred_img = cv2.blur(image,(5,5))
+        #canny = cv2.Canny(blurred_img, lower, upper)
+        gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        squarePic = self.make_square(gris)
         resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
         return resizedImg
 
