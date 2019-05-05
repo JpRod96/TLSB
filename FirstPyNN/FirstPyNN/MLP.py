@@ -37,16 +37,22 @@ def main(flatten):
     
     train = np.array(dataset)
     train = train.astype(float) / 255.
+    
+    print(train.shape)
+    print(train_labels)
 
-    dataset = []
+    dataset_test = []
     test_labels = []
 
     for folder in folders:
         value = switcher.get(folder, -1)
-        chargeFolderContent(dataset, fullPathTest+folder, test_labels, value, flatten)
+        chargeFolderContent(dataset_test, fullPathTest+folder, test_labels, value, flatten)
 
-    test = np.array(dataset)
-    test = train.astype(float) / 255.
+    test = np.array(dataset_test)
+    test = test.astype(float) / 255.
+    
+    print(test.shape)
+    print(test_labels)
 
     #if not flatten :
     #    plt.figure(figsize=(10,10))
@@ -59,8 +65,6 @@ def main(flatten):
     #        #plt.xlabel(class_names[train_labels[i]])
     #    plt.show()
 
-    print(train.shape)
-    print(train_labels)
     model = keras.Sequential([
         keras.layers.Flatten(input_shape=(1500, 300, 3)),
         keras.layers.Dense(128, activation=tf.nn.relu),
@@ -73,7 +77,7 @@ def main(flatten):
 
     model.fit(train, train_labels, epochs=50)
     test_loss, test_acc = model.evaluate(test, test_labels)
-
+#
     print('Test accuracy:', test_acc)
 
 def chargeFolderContent(dataset, path, labels, value, flatten):
