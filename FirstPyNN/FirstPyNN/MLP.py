@@ -8,7 +8,8 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-fullPath = "C:/Users/Jp.SANDRO-HP/Desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
+fullPathTrain = "C:/Users/Jp.SANDRO-HP/Desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
+fullPathTest = "C:/Users/Jp.SANDRO-HP/Desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/test/"
 BANO_VALUE = 1
 BUENOS_DIAS_VALUE = 2
 HOLA_VALUE = 3
@@ -32,21 +33,31 @@ def main(flatten):
 
     for folder in folders:
         value = switcher.get(folder, -1)
-        chargeFolderContent(dataset, folder, train_labels, value, flatten)
+        chargeFolderContent(dataset, fullPathTrain+folder, train_labels, value, flatten)
     
     train = np.array(dataset)
     train = train.astype(float) / 255.
 
-    if not flatten :
-        plt.figure(figsize=(10,10))
-        for i in range(25):
-            plt.subplot(5,5,i+1)
-            plt.xticks([])
-            plt.yticks([])
-            plt.grid(False)
-            plt.imshow(train[i], cmap=plt.cm.binary)
-            #plt.xlabel(class_names[train_labels[i]])
-        plt.show()
+    dataset = []
+    test_labels = []
+
+    for folder in folders:
+        value = switcher.get(folder, -1)
+        chargeFolderContent(dataset, fullPathTest+folder, test_labels, value, flatten)
+
+    test = np.array(dataset)
+    test = train.astype(float) / 255.
+
+    #if not flatten :
+    #    plt.figure(figsize=(10,10))
+    #    for i in range(25):
+    #        plt.subplot(5,5,i+1)
+    #        plt.xticks([])
+    #        plt.yticks([])
+    #        plt.grid(False)
+    #        plt.imshow(train[i], cmap=plt.cm.binary)
+    #        #plt.xlabel(class_names[train_labels[i]])
+    #    plt.show()
 
     print(train.shape)
     print(train_labels)
@@ -61,9 +72,11 @@ def main(flatten):
               metrics=['accuracy'])
 
     model.fit(train, train_labels, epochs=50)
+    test_loss, test_acc = model.evaluate(test, test_labels)
 
-def chargeFolderContent(dataset, folder, labels, value, flatten):
-    path = fullPath + folder;
+    print('Test accuracy:', test_acc)
+
+def chargeFolderContent(dataset, path, labels, value, flatten):
     for filename in os.listdir(path):
         img = cv2.imread(path+"/"+filename)
         if img is not None:
