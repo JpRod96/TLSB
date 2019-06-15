@@ -10,10 +10,10 @@ import tensorflow as tf
 
 fullPathTrain = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
 fullPathTest = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
-BANO_VALUE = 1
-BUENOS_DIAS_VALUE = 2
-HOLA_VALUE = 3
-LUZ_VALUE = 4
+BANO_VALUE = 0
+BUENOS_DIAS_VALUE = 1
+HOLA_VALUE = 2
+LUZ_VALUE = 3
 
 BANO = "BANO"
 BUENOS_DIAS = "BUENOS_DIAS"
@@ -68,7 +68,7 @@ def main(flatten):
     model = keras.Sequential([
         keras.layers.Flatten(input_shape=(1500, 300, 3)),
         keras.layers.Dense(128, activation=tf.nn.relu),
-        keras.layers.Dense(10, activation=tf.nn.softmax)
+        keras.layers.Dense(4, activation=tf.nn.softmax)
     ])
 
     model.compile(optimizer='adam', 
