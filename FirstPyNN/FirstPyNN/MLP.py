@@ -1,4 +1,4 @@
-import keras
+from tensorflow import keras
 from sklearn.preprocessing import LabelBinarizer
 import matplotlib.pyplot as plt
 import os
@@ -8,8 +8,8 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-fullPathTrain = "C:/Users/Jp.SANDRO-HP/Desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
-fullPathTest = "C:/Users/Jp.SANDRO-HP/Desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/test/"
+fullPathTrain = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
+fullPathTest = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
 BANO_VALUE = 1
 BUENOS_DIAS_VALUE = 2
 HOLA_VALUE = 3
