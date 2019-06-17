@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import util
+from scipy import ndimage
 from random import randrange, choice
 
 class VideoCutter:
@@ -26,7 +27,7 @@ class VideoCutter:
             if cont >= cutOn:
                 #Rotar imagen
                 if rotate:
-                    rotatedFrame = self.rotateFrame(frame)
+                    rotatedFrame = ndimage.rotate(frame, 270)
                     listOfFrames.append(rotatedFrame)
                 else:
                     listOfFrames.append(frame)
@@ -51,12 +52,6 @@ class VideoCutter:
             imageName = self.PHOTO + str(numberOfFrame) + self.JPG_EXTENSION;
             cv2.imwrite (imageName, photo)
             numberOfFrame += 1
-
-    def rotateFrame(self, frame):
-        rows,cols,dimensions = frame.shape
-        rotationParameters = cv2.getRotationMatrix2D((cols/2,rows/2),270,1)
-        rotatedFrame = cv2.warpAffine(frame,rotationParameters,(cols,rows))
-        return rotatedFrame
 
     def getRandomNumber(self, constantForProbablity):
         randomNumber = randrange(constantForProbablity)
