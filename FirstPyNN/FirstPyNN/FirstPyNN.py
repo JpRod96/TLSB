@@ -3,15 +3,21 @@ import tensorflow as tf
 from tensorflow import keras
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
+from keras.models import save_model
+
 from keras.layers import Activation, Dropout, Flatten, Conv2D, MaxPooling2D, Dense
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-dataset = ImageDataGenerator()
+dataset = ImageDataGenerator(rotation_range=5,width_shift_range=0.05,height_shift_range=0.05,rescale=1/255,shear_range=0.1,zoom_range=0.1,horizontal_flip=False,fill_mode='nearest')
 train = dataset.flow_from_directory('DATASET/train',
+                                    target_size=(256,256),
+                                    batch_size=64,
                                     class_mode='categorical')
 test = dataset.flow_from_directory('DATASET/test',
+                                    target_size=(256,256),
+                                    batch_size=64,
                                     class_mode='categorical')
 print(train.class_indices)
 
@@ -23,7 +29,7 @@ model.add(MaxPooling2D(pool_size = (2, 2)))
 model.add(Conv2D(filters = 64, kernel_size = (3, 3), input_shape = (256, 256, 3), activation = 'relu'))
 model.add(MaxPooling2D(pool_size = (2, 2)))
 model.add(Flatten())
-model.add(Dense(128))
+model.add(Dense(256))
 model.add(Activation('relu'))
 model.add(Dropout(0.5))
 model.add(Dense(4))
@@ -39,10 +45,12 @@ model.compile(optimizer='adam',
 #    keras.layers.Dense(4, activation=tf.nn.softmax)
 #])
 
-result = model.fit_generator(train, epochs=1, steps_per_epoch=50,
+result = model.fit_generator(train, epochs=4, steps_per_epoch=50,
           validation_data=test, validation_steps= 12 )
 
 print(result.history["acc"])
+
+save_model(model,'gestosbyw.h5')
 #print(tf.__version__)
 
 #fashion_mnist = keras.datasets.fashion_mnist

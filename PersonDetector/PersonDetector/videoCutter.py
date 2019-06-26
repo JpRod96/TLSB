@@ -16,7 +16,7 @@ class VideoCutter:
         frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
         constantForProbablity = 5
-        cutOn = 0
+        cutOn = 30
         cont = 0
         listOfFrames = []
 
@@ -33,12 +33,12 @@ class VideoCutter:
                     listOfFrames.append(frame)
                 # Corte en el frame:
                 if typeOfCut == "Constant":
-                    cutOn = frameCount/outFramesNumber + cont
+                    cutOn = cont + 10
                 if typeOfCut == "Probabilistic":
                     cutOn = frameCount/outFramesNumber + cont
                     cutOn = self.getRandomCut(cutOn, constantForProbablity)
-                if len(listOfFrames) == outFramesNumber:
-                    break
+                #if len(listOfFrames) == outFramesNumber:
+                #    break
             else:
                 if cutOn >= frameCount:
                     break

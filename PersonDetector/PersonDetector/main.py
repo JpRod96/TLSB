@@ -1,7 +1,7 @@
 from VideoProcessManager import VideoProcessManager
 import util
 
-framesNro = 5
+framesNro = 10
 picSize = 300
 rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
