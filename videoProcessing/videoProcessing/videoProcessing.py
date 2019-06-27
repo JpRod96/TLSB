@@ -7,7 +7,7 @@ from keras.preprocessing import image
 model = load_model('gestos3.h5')
 background = None
 accumulated_weight = 0.5
-roi_top = 70
+roi_top = 30
 roi_bottom = 470
 roi_right = 100
 roi_left = 550
@@ -43,7 +43,7 @@ def recognition(thresholded):
 
 #   print(max(max(model.predict(original))))
 
-    return model.predict_classes(original)
+    return (model.predict_classes(original) , max(max(model.predict(original))))
 
 def getWord(word):
     switcher = {
@@ -59,6 +59,7 @@ def getWord(word):
 
 cap = cv2.VideoCapture(0)
 num_frames = 0
+predictedGesturesList = []
 
 while True:
     ret, frame = cap.read(0)
@@ -72,30 +73,46 @@ while True:
     #    if num_frames <= 59:
     #        cv2.putText(frame_copy, 'WAIT GETTING BG',(200, 400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
     #        cv2.imshow('recognition', frame_copy)
-    #else:
-        # BORRAR FONDO
-        #hand = segment(gray)
-        #if hand is not None:
-           #thresholded = hand
-    med_val = np.median(gray)
-    lower = int(max(0,0.7*med_val))
-    upper = int(min(255,1.3*med_val))
-    canny = cv2.Canny(gray, lower, upper)
-    cv2.imwrite("predc.jpg", canny)
-    prediction = recognition(canny)
-    word = getWord(prediction[0])
-    cv2.putText(frame_copy, word, (70, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0), 5)
-    cv2.imshow('Thesholded', canny)
-            
-    
+
+    if num_frames < 60:
+        if num_frames <= 59:
+            cv2.putText(frame_copy, 'WAIT GETTING BG',(200, 400), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
+            cv2.imshow('recognition', frame_copy)
+    else:
+        #else:
+            # BORRAR FONDO
+            #hand = segment(gray)
+            #if hand is not None:
+               #thresholded = hand
+        med_val = np.median(gray)
+        lower = int(max(0,0.7*med_val))
+        upper = int(min(255,1.3*med_val))
+        canny = cv2.Canny(gray, lower, upper)
+        cv2.imwrite("predc.jpg", canny)
+        prediction, probability = recognition(canny)
+
+        if probability > 0.85:
+            print(probability)
+            word = getWord(prediction[0])
+            cv2.putText(frame_copy, word, (70, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0), 5)
+            cv2.imshow('Thesholded', canny)
+            predictedGesturesList.append(word)
+            #print(predictedGesturesList)
+        else:
+            cv2.putText(frame_copy, 'None' , (70, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0), 5)
+            cv2.imshow('Thesholded', canny)
+
     cv2.rectangle(frame_copy, (roi_left, roi_top), (roi_right, roi_bottom), (0,0,255), 3)
     num_frames += 1
     cv2.imshow('recognition', frame_copy)
-
     k = cv2.waitKey(1)
-
     if k == 27:
         break
 
 cap.release()
-cv2.detroyAllWindows()
+finalPredictedGesturesList = []
+for i in predictedGesturesList:
+    if i not in finalPredictedGesturesList:
+        finalPredictedGesturesList.append(i)
+
+print(finalPredictedGesturesList)
