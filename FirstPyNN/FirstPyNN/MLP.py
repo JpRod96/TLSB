@@ -9,7 +9,7 @@ import numpy as np
 import tensorflow as tf
 
 fullPathTrain = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
-fullPathTest = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
+fullPathTest = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/test/"
 BANO_VALUE = 0
 BUENOS_DIAS_VALUE = 1
 HOLA_VALUE = 2
@@ -54,17 +54,6 @@ def main(flatten):
     print(test.shape)
     print(test_labels)
 
-    #if not flatten :
-    #    plt.figure(figsize=(10,10))
-    #    for i in range(25):
-    #        plt.subplot(5,5,i+1)
-    #        plt.xticks([])
-    #        plt.yticks([])
-    #        plt.grid(False)
-    #        plt.imshow(train[i], cmap=plt.cm.binary)
-    #        #plt.xlabel(class_names[train_labels[i]])
-    #    plt.show()
-
     model = keras.Sequential([
         keras.layers.Flatten(input_shape=(1500, 300, 3)),
         keras.layers.Dense(128, activation=tf.nn.relu),
@@ -75,7 +64,7 @@ def main(flatten):
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-    model.fit(train, train_labels, epochs=50)
+    model.fit(train, train_labels, epochs=10)
     test_loss, test_acc = model.evaluate(test, test_labels)
 #
     print('Test accuracy:', test_acc)
