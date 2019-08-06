@@ -6,7 +6,7 @@ from edgeDetector import EdgeDetector
 from videoCutter import VideoCutter
 from videoProcessorI import VideoProcessorI
 
-class VideoProcessor(VideoProcessorI):
+class VideoCutterProcessor(VideoProcessorI):
     framesNro = None
     detector = None
     rotate = None
@@ -37,7 +37,7 @@ class VideoProcessor(VideoProcessorI):
         videoCutter =  VideoCutter()
         frames = videoCutter.cutVideo(videoPath, self.framesNro, self.rotate, self.typeOfCut)
 
-        x=1;
+        x=1
         edgeImages=[]
         for frame in frames:
             print("Processing frame number "+ str(x) +"...")

@@ -1,5 +1,6 @@
 from VideoProcessManager import VideoProcessManager
-from videoProcessor import VideoProcessor
+from videoCutterProcessor import VideoCutterProcessor
+from videoMotionProcessor import VideoMotionProcessor
 import util
 
 framesNro = 5
@@ -8,7 +9,8 @@ rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
 typeOfCut = "Constant"
 
-videoProcessor = VideoProcessor(framesNro, picSize, rotate, typeOfCut)
+#videoProcessor = VideoCutterProcessor(framesNro, picSize, rotate, typeOfCut)
+videoProcessor = VideoMotionProcessor(picSize)
 vid = VideoProcessManager(videoProcessor)
 vid.processPath("D:/desktop/DATASET/ADIOS")
 #vid.processPath("D:/VideosDataset/BANO1")
