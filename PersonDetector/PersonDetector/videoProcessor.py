@@ -4,8 +4,9 @@ import util
 from PersonDetector import PersonDetector
 from edgeDetector import EdgeDetector
 from videoCutter import VideoCutter
+from videoProcessorI import VideoProcessorI
 
-class VideoProcessor:
+class VideoProcessor(VideoProcessorI):
     framesNro = None
     detector = None
     rotate = None

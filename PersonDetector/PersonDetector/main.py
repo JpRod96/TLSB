@@ -1,4 +1,5 @@
 from VideoProcessManager import VideoProcessManager
+from videoProcessor import VideoProcessor
 import util
 
 framesNro = 5
@@ -7,10 +8,11 @@ rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
 typeOfCut = "Constant"
 
-vid = VideoProcessManager(framesNro, picSize, rotate, typeOfCut)
-#vid.processPath("C:/Users/Jp.SANDRO-HP/Downloads/gestos/luz")
+videoProcessor = VideoProcessor(framesNro, picSize, rotate, typeOfCut)
+vid = VideoProcessManager(videoProcessor)
+vid.processPath("D:/desktop/DATASET/ADIOS")
 #vid.processPath("D:/VideosDataset/BANO1")
-
+"""
 i = 1
 print("Generating edges of images for word Bano")
 while i < 6:
@@ -39,3 +41,4 @@ while i < 6:
   i += 1
 print("Word Luz complete")
 
+"""
