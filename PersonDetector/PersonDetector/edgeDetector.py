@@ -36,7 +36,7 @@ class EdgeDetector:
         return resizedImg
 
     def make_square(self, im):
-        imgHeight, imgWidth = im.shape;
+        imgHeight, imgWidth = im.shape
         desired_size = max([imgHeight, imgWidth])
 
         old_size = im.shape[:2] # old_size is in (height, width) format
