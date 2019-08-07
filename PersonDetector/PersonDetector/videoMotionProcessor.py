@@ -1,5 +1,6 @@
 from videoProcessorI import VideoProcessorI
 #import matplotlib.pyplot as plt
+import util
 import cv2
 import numpy as np
 from scipy.signal import argrelmax
@@ -9,18 +10,30 @@ from edgeDetector import EdgeDetector
 from PersonDetector import PersonDetector
 
 class VideoMotionProcessor(VideoProcessorI):
-
-    criticalFramesPath = "criticalFrames"
     iterations = 4
 
-    def __init__(self, finalPicSize):
+    def __init__(self, finalPicSize, combine):
         self.edgeDetector = EdgeDetector(finalPicSize)
         self.detector = PersonDetector()
+        self.combineImages = combine
 
     def process(self, videoPath):
         record, frames = self.cutVideo(videoPath)
+
+        self.directory = util.getPathOfVideoDirectory(videoPath)
+        self.videoName = util.getLastTokenOfPath(videoPath)[0]
         
-        maximaValues = record
+        maximaIndexes, maximaValues, globalIndexes = self.processForGettingMaxAlike(record)
+
+        print(maximaIndexes)
+        print(maximaValues)
+        print(globalIndexes)
+        
+        if(self.combineImages):
+            self.saveCriticalFrames(frames, globalIndexes)
+
+    def processForGettingMaxAlike(self, weigths):
+        maximaValues = weigths
         maximaIndexes = None
         globalIndexes = np.arange(0, len(maximaValues), 1)
 
@@ -32,22 +45,21 @@ class VideoMotionProcessor(VideoProcessorI):
             maximaIndexes = argrelmax(maximaValues)[0]
             maximaValues = maximaValues[maximaIndexes]
             globalIndexes = globalIndexes[maximaIndexes]
-
-        print(maximaIndexes)
-        print(maximaValues)
-        print(globalIndexes)
-        self.saveCriticalFrames(frames, globalIndexes)
+        
+        return maximaIndexes, maximaValues, globalIndexes
 
     def saveCriticalFrames(self, frames, indexes):
+        counter = 1
         for index in indexes:
-            fileName = self.criticalFramesPath +"/"+ str(index) +  ".jpg"
+            fileName = self.directory +"/"+ self.videoName + str(counter) +  ".jpg"
+            counter += 1
             cv2.imwrite(fileName, frames[index])
 
     def cutVideo(self, videoPath):
         cap = cv2.VideoCapture(videoPath)
         print("Video " + videoPath + " loaded")
         frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        print(frameCount)
+        print(str(frameCount) + " frames to process...")
         lastFrame = None
         onGoingFrame = None
         listOfFrames = []
