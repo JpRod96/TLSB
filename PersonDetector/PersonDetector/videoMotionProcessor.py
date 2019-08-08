@@ -18,8 +18,8 @@ class VideoMotionProcessor(VideoProcessorI):
         self.combineImages = combine
 
     def process(self, videoPath):
-        record, frames = self.cutVideo(videoPath)
-
+        frames = self.cutVideo(videoPath)
+        record = self.getAlikeWeights(frames)
         self.directory = util.getPathOfVideoDirectory(videoPath)
         self.videoName = util.getLastTokenOfPath(videoPath)[0]
         
@@ -48,6 +48,22 @@ class VideoMotionProcessor(VideoProcessorI):
         
         return maximaIndexes, maximaValues, globalIndexes
 
+    def processForGettingMinAlike(self, weigths):
+        minimaValues = weigths
+        minimaIndexes = None
+        globalIndexes = np.arange(0, len(minimaValues), 1)
+
+        #plt.plot(maximaValues)
+        #plt.ylabel('Alike percentage')
+        #plt.show()
+
+        for x in range(1, self.iterations):
+            minimaIndexes = argrelmin(minimaValues)[0]
+            minimaValues = minimaValues[minimaIndexes]
+            globalIndexes = globalIndexes[minimaIndexes]
+        
+        return minimaIndexes, minimaValues, globalIndexes
+
     def saveCriticalFrames(self, frames, indexes):
         counter = 1
         for index in indexes:
@@ -61,37 +77,13 @@ class VideoMotionProcessor(VideoProcessorI):
         frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         print(str(frameCount) + " frames to process...")
         listOfFrames = []
-        """
-        lastFrame = None
-        onGoingFrame = None
         cont = 0
-        weights = []
-
-        while(cap.isOpened()):
-            ret, frame = cap.read()
-            lastFrame = onGoingFrame
-            onGoingFrame = frame
-            listOfFrames.append(frame)
-            cont+=1
-            if(cont > 1):
-                match = self.compare(lastFrame, onGoingFrame)
-                weights.append(match)
-                self.printProgressBar(cont, frameCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
-            if(cont >= frameCount):
-                break
-        """
-        while(cap.isOpened()):
+        while(cap.isOpened() and cont < frameCount):
             ret, frame = cap.read()
             listOfFrames.append(frame)
-            cont+=1
-            if(cont > 1):
-                match = self.compare(lastFrame, onGoingFrame)
-                weights.append(match)
-                self.printProgressBar(cont, frameCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
-            if(cont >= frameCount):
-                break
+            cont += 1
         cap.release()
-        return np.array(weights), listOfFrames
+        return listOfFrames
     
     def getAlikeWeights(self, frames):
         frameCount = len(frames)
@@ -111,7 +103,7 @@ class VideoMotionProcessor(VideoProcessorI):
                 self.printProgressBar(cont, frameCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
             if(cont >= frameCount):
                 break
-        return weights
+        return np.array(weights)
 
     def compare(self, pic1, pic2):
         sift = cv2.xfeatures2d.SIFT_create()
@@ -141,9 +133,9 @@ class VideoMotionProcessor(VideoProcessorI):
 #make utilitary
 
     def printProgressBar (self, iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
-            percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-            filledLength = int(length * iteration // total)
-            bar = fill * filledLength + '-' * (length - filledLength)
-            print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
-            if iteration == total: 
-                print()
+        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        filledLength = int(length * iteration // total)
+        bar = fill * filledLength + '-' * (length - filledLength)
+        print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+        if iteration == total: 
+            print()
