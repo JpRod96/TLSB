@@ -28,7 +28,7 @@ class VideoMotionProcessor(VideoProcessorI):
         print(maximaIndexes)
         print(maximaValues)
         print(globalIndexes)
-        
+
         if(self.combineImages):
             self.saveCriticalFrames(frames, globalIndexes)
 
@@ -60,11 +60,12 @@ class VideoMotionProcessor(VideoProcessorI):
         print("Video " + videoPath + " loaded")
         frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         print(str(frameCount) + " frames to process...")
+        listOfFrames = []
+        """
         lastFrame = None
         onGoingFrame = None
-        listOfFrames = []
         cont = 0
-        forPlotting = []
+        weights = []
 
         while(cap.isOpened()):
             ret, frame = cap.read()
@@ -72,14 +73,45 @@ class VideoMotionProcessor(VideoProcessorI):
             onGoingFrame = frame
             listOfFrames.append(frame)
             cont+=1
-            if(cont>1):
+            if(cont > 1):
                 match = self.compare(lastFrame, onGoingFrame)
-                forPlotting.append(match)
+                weights.append(match)
+                self.printProgressBar(cont, frameCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
+            if(cont >= frameCount):
+                break
+        """
+        while(cap.isOpened()):
+            ret, frame = cap.read()
+            listOfFrames.append(frame)
+            cont+=1
+            if(cont > 1):
+                match = self.compare(lastFrame, onGoingFrame)
+                weights.append(match)
                 self.printProgressBar(cont, frameCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
             if(cont >= frameCount):
                 break
         cap.release()
-        return np.array(forPlotting), listOfFrames
+        return np.array(weights), listOfFrames
+    
+    def getAlikeWeights(self, frames):
+        frameCount = len(frames)
+        weights = []
+        cont = 0
+        lastFrame = None
+        onGoingFrame = None
+
+        for index in range(0, frameCount):
+            frame = frames[index]
+            lastFrame = onGoingFrame
+            onGoingFrame = frame
+            cont+=1
+            if(cont > 1):
+                match = self.compare(lastFrame, onGoingFrame)
+                weights.append(match)
+                self.printProgressBar(cont, frameCount, prefix = 'Progress:', suffix = 'Complete', length = 50)
+            if(cont >= frameCount):
+                break
+        return weights
 
     def compare(self, pic1, pic2):
         sift = cv2.xfeatures2d.SIFT_create()
