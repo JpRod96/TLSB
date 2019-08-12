@@ -8,11 +8,11 @@ picSize = 300
 rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
 typeOfCut = "Constant"
-
+combineImages = True;
 #videoProcessor = VideoCutterProcessor(framesNro, picSize, rotate, typeOfCut)
-videoProcessor = VideoMotionProcessor(picSize)
+videoProcessor = VideoMotionProcessor(picSize, combineImages)
 vid = VideoProcessManager(videoProcessor)
-vid.processPath("D:/desktop/DATASET/ADIOS")
+vid.processPath("D:/desktop/DATASET/HOLA")
 #vid.processPath("D:/VideosDataset/BANO1")
 """
 i = 1
