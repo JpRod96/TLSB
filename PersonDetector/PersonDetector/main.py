@@ -8,11 +8,13 @@ picSize = 300
 rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
 typeOfCut = "Constant"
-combineImages = True;
+combineImages = False
+
 #videoProcessor = VideoCutterProcessor(framesNro, picSize, rotate, typeOfCut)
 videoProcessor = VideoMotionProcessor(picSize, combineImages)
+
 vid = VideoProcessManager(videoProcessor)
-vid.processPath("D:/desktop/DATASET/HOLA")
+vid.processPath("D:/desktop/cambiosdireccion/images/senha2.mp4")
 #vid.processPath("D:/VideosDataset/BANO1")
 """
 i = 1

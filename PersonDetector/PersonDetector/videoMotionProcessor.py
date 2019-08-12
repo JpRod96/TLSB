@@ -11,6 +11,7 @@ from PersonDetector import PersonDetector
 
 class VideoMotionProcessor(VideoProcessorI):
     iterations = 4
+    MAX_ALIKE_PERCENTAGE = 31
 
     def __init__(self, finalPicSize, combine):
         self.edgeDetector = EdgeDetector(finalPicSize)
@@ -29,8 +30,37 @@ class VideoMotionProcessor(VideoProcessorI):
         print(maximaValues)
         print(globalIndexes)
 
+        print(self.postProcessFilter(frames, globalIndexes))
+
         if(self.combineImages):
             self.saveCriticalFrames(frames, globalIndexes)
+        else:
+            self.saveCriticalFrames(frames, globalIndexes)
+
+    def postProcessFilter(self, criticalFrames, indexes):
+        print("Starting post-process filter")
+
+        finalFramesIndexes = []
+        compareFrameIndex = indexes[0]
+        compareFrame = criticalFrames[compareFrameIndex]
+        cont = 0
+
+        for index in range(0, len(indexes) - 1 ):
+            globalIndex = indexes[index + 1]
+            actualFrame = criticalFrames[globalIndex]
+
+            match = self.compare(compareFrame, actualFrame)
+            print(str(match))
+
+            if(match < self.MAX_ALIKE_PERCENTAGE):
+                finalFramesIndexes.append(compareFrameIndex)
+            compareFrame = actualFrame
+            compareFrameIndex = globalIndex
+            cont += 1
+            self.printProgressBar(cont, len(indexes) - 1 , prefix = 'Post-Process:', suffix = 'Complete', length = 25)
+
+        finalFramesIndexes.append(compareFrameIndex)
+        return finalFramesIndexes
 
     def processForGettingMaxAlike(self, weigths):
         maximaValues = weigths
@@ -53,7 +83,7 @@ class VideoMotionProcessor(VideoProcessorI):
         minimaIndexes = None
         globalIndexes = np.arange(0, len(minimaValues), 1)
 
-        #plt.plot(maximaValues)
+        #plt.plot(minimaValues)
         #plt.ylabel('Alike percentage')
         #plt.show()
 
