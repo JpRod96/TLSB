@@ -11,7 +11,7 @@ typeOfCut = "Constant"
 combineImages = True
 
 #videoProcessor = VideoCutterProcessor(framesNro, picSize, rotate, typeOfCut)
-videoProcessor = VideoMotionProcessor(picSize, combineImages)
+videoProcessor = VideoMotionProcessor(picSize, combineImages, framesNro)
 
 vid = VideoProcessManager(videoProcessor)
 vid.processPath("D:/desktop/DATASET/CAFE/20190805_164017.mp4")

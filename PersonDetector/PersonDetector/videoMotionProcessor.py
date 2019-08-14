@@ -13,10 +13,11 @@ class VideoMotionProcessor(VideoProcessorI):
     iterations = 4
     MAX_ALIKE_PERCENTAGE = 31
 
-    def __init__(self, finalPicSize, combine):
+    def __init__(self, finalPicSize, toCombine, framesNr):
         self.edgeDetector = EdgeDetector(finalPicSize)
         self.detector = PersonDetector()
-        self.combineImages = combine
+        self.combineImages = toCombine
+        self.framesNumber = framesNr
 
     def process(self, videoPath):
         frames = self.cutVideo(videoPath)
@@ -30,7 +31,7 @@ class VideoMotionProcessor(VideoProcessorI):
         print(maximaValues)
         print(globalIndexes)
 
-        print(self.postProcessFilter(frames, globalIndexes))
+        globalIndexes = self.postProcessFilter(frames, globalIndexes)
 
         if(self.combineImages):
             self.combineFrames(frames, globalIndexes)
@@ -114,13 +115,34 @@ class VideoMotionProcessor(VideoProcessorI):
             except:
                 print("Human not found on frame number "+ str(x))
             x=x+1
+        edgeImages = self.satisfyFramesNumber(edgeImages)
         if(len(edgeImages)>0):
             print("Concatenating all images")
             data = util.combineImages(edgeImages)
             util.saveImageToPath(data, self.videoName + "Edges", ".jpg", self.directory)
             print("Done.")
         else:
-            print("Unsuccesful process, theres no human on the video clip "+ videoPath +"\n")
+            print("Unsuccesful process, theres no human on the video clip "+ self.videoName +"\n")
+    
+    def satisfyFramesNumber(self, framesArray):
+        if(self.framesNumber > 0):
+            if(self.framesNumber > len(framesArray)):
+                self.increaseArrayLength(framesArray)
+            elif(self.framesNumber < len(framesArray)):
+                self.decreaseArrayLength(framesArray)
+        return framesArray
+
+    def increaseArrayLength(self, array):
+        difference = self.framesNumber - len(array)
+        lastIndex = len(array)-1
+        lastFrame = array[lastIndex]
+        for x in range(0, difference):
+            array.append(lastFrame)
+
+    def decreaseArrayLength(self, array):
+        difference = len(array) - self.framesNumber
+        for x in range(0, difference):
+            array.pop()
 
     def cutVideo(self, videoPath):
         cap = cv2.VideoCapture(videoPath)
