@@ -42,7 +42,7 @@ class VideoCutterProcessor(VideoProcessorI):
         for frame in frames:
             print("Processing frame number "+ str(x) +"...")
             try:
-                treatedImage = self.detector.detectPersonFronNumpy(frame)
+                treatedImage = self.detector.detectPersonFromNumpy(frame)
                 edgeImages.append(self.edgeDetector.getImageEdgesFromNumpy(treatedImage))
                 print("Done.\n")
             except:

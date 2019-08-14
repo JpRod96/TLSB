@@ -33,7 +33,7 @@ class VideoMotionProcessor(VideoProcessorI):
         print(self.postProcessFilter(frames, globalIndexes))
 
         if(self.combineImages):
-            self.saveCriticalFrames(frames, globalIndexes)
+            self.combineFrames(frames, globalIndexes)
         else:
             self.saveCriticalFrames(frames, globalIndexes)
 
@@ -50,7 +50,7 @@ class VideoMotionProcessor(VideoProcessorI):
             actualFrame = criticalFrames[globalIndex]
 
             match = self.compare(compareFrame, actualFrame)
-            print(str(match))
+            #print(str(match))
 
             if(match < self.MAX_ALIKE_PERCENTAGE):
                 finalFramesIndexes.append(compareFrameIndex)
@@ -100,6 +100,27 @@ class VideoMotionProcessor(VideoProcessorI):
             fileName = self.directory +"/"+ self.videoName + str(counter) +  ".jpg"
             counter += 1
             cv2.imwrite(fileName, frames[index])
+    
+    def combineFrames(self, frames, indexes):
+        x=1
+        edgeImages=[]
+        for index in indexes:
+            frame = frames[index]
+            print("Processing frame number "+ str(x) +"...")
+            try:
+                treatedImage = self.detector.detectPersonFromNumpy(frame)
+                edgeImages.append(self.edgeDetector.getImageEdgesFromNumpy(treatedImage))
+                print("Done.\n")
+            except:
+                print("Human not found on frame number "+ str(x))
+            x=x+1
+        if(len(edgeImages)>0):
+            print("Concatenating all images")
+            data = util.combineImages(edgeImages)
+            util.saveImageToPath(data, self.videoName + "Edges", ".jpg", self.directory)
+            print("Done.")
+        else:
+            print("Unsuccesful process, theres no human on the video clip "+ videoPath +"\n")
 
     def cutVideo(self, videoPath):
         cap = cv2.VideoCapture(videoPath)
