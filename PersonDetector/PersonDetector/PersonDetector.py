@@ -29,10 +29,11 @@ class PersonDetector:
         cv2.imwrite(treatedImageName + extension, cropped)  
         return treatedImageName
     
-    def detectPersonFronNumpy(self, image):
-        detections = self.detector.detectCustomObjectsFromImage(custom_objects=self.custom_objects,
+    def detectPersonFromNumpy(self, image):
+        npArray, detections = self.detector.detectCustomObjectsFromImage(custom_objects=self.custom_objects,
                                                                 input_type="array",
                                                                 input_image=image,
+                                                                output_type="array",
                                                                 minimum_percentage_probability=55)
         highestPercentageDetection = self.getDetectionWHighestPercentage(detections)
         if(highestPercentageDetection != None):
