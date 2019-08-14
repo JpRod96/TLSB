@@ -4,6 +4,7 @@ import util
 import cv2
 import numpy as np
 from scipy.signal import argrelmax
+from scipy import ndimage
 from os import listdir
 from os.path import isfile, join
 from edgeDetector import EdgeDetector
@@ -13,11 +14,12 @@ class VideoMotionProcessor(VideoProcessorI):
     iterations = 4
     MAX_ALIKE_PERCENTAGE = 31
 
-    def __init__(self, finalPicSize, toCombine, framesNr):
+    def __init__(self, finalPicSize, toCombine, framesNr = 0, rotate = False):
         self.edgeDetector = EdgeDetector(finalPicSize)
         self.detector = PersonDetector()
         self.combineImages = toCombine
         self.framesNumber = framesNr
+        self.rotateImages = rotate
 
     def process(self, videoPath):
         frames = self.cutVideo(videoPath)
@@ -107,6 +109,8 @@ class VideoMotionProcessor(VideoProcessorI):
         edgeImages=[]
         for index in indexes:
             frame = frames[index]
+            if self.rotateImages:
+                frame = ndimage.rotate(frame, 270)
             print("Processing frame number "+ str(x) +"...")
             try:
                 treatedImage = self.detector.detectPersonFromNumpy(frame)
