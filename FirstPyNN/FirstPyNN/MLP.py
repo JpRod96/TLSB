@@ -106,39 +106,28 @@ def models():
 
     model0 = keras.Sequential([
         keras.layers.Flatten(input_shape=(1500, 300, 3)),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(32, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
     model1 = keras.Sequential([
         keras.layers.Flatten(input_shape=(1500, 300, 3)),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
     model2 = keras.Sequential([
         keras.layers.Flatten(input_shape=(1500, 300, 3)),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(16, activation=tf.nn.relu),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
     model3 = keras.Sequential([
         keras.layers.Flatten(input_shape=(1500, 300, 3)),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(8, activation=tf.nn.relu),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
