@@ -102,7 +102,10 @@ class VideoMotionProcessor(VideoProcessorI):
         for index in indexes:
             fileName = self.directory +"/"+ self.videoName + str(counter) +  ".jpg"
             counter += 1
-            cv2.imwrite(fileName, frames[index])
+            frame = frames[index]
+            if self.rotateImages:
+                frame = ndimage.rotate(frame, 270)
+            cv2.imwrite(fileName, frame)
     
     def combineFrames(self, frames, indexes):
         x=1

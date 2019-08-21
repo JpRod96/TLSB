@@ -8,13 +8,13 @@ picSize = 300
 rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
 typeOfCut = "Constant"
-combineImages = True
+combineImages = False
 
 #videoProcessor = VideoCutterProcessor(framesNro, picSize, rotate, typeOfCut)
 videoProcessor = VideoMotionProcessor(picSize, combineImages, rotate = rotate)
 
 vid = VideoProcessManager(videoProcessor)
-vid.processPath("D:/desktop/DATASET/CAFE/VID_20190728_143908.mp4")
+vid.processPath("D:/desktop/DATASET/CBBA/rotar")
 
 """
 i = 1
