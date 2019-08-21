@@ -15,6 +15,7 @@ class VideoMotionProcessor(VideoProcessorI):
     MAX_ALIKE_PERCENTAGE = 31
 
     def __init__(self, finalPicSize, toCombine, framesNr = 0, rotate = False):
+        self.picSize = finalPicSize
         self.edgeDetector = EdgeDetector(finalPicSize)
         self.detector = PersonDetector()
         self.combineImages = toCombine
@@ -100,12 +101,20 @@ class VideoMotionProcessor(VideoProcessorI):
     def saveCriticalFrames(self, frames, indexes):
         counter = 1
         for index in indexes:
+            print("Processing frame number "+ str(counter) +"...")
             fileName = self.directory +"/"+ self.videoName + str(counter) +  ".jpg"
             counter += 1
             frame = frames[index]
             if self.rotateImages:
                 frame = ndimage.rotate(frame, 270)
-            cv2.imwrite(fileName, frame)
+            try:
+                frame = self.detector.detectPersonFromNumpy(frame)
+                frame = self.edgeDetector.make_square(frame)
+                print("Done.\n")
+                frame = cv2.resize(frame, (self.picSize, self.picSize))
+                cv2.imwrite(fileName, frame)
+            except:
+                print("Human not found on frame number "+ str(counter - 1))
     
     def combineFrames(self, frames, indexes):
         x=1

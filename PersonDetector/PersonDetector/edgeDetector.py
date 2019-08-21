@@ -38,7 +38,7 @@ class EdgeDetector:
         return resizedImg
 
     def make_square(self, im):
-        imgHeight, imgWidth = im.shape
+        imgHeight, imgWidth = im.shape[:2]
         desired_size = max([imgHeight, imgWidth])
 
         old_size = im.shape[:2] # old_size is in (height, width) format
@@ -54,7 +54,11 @@ class EdgeDetector:
         top, bottom = delta_h//2, delta_h-(delta_h//2)
         left, right = delta_w//2, delta_w-(delta_w//2)
 
-        color = [0, 0, 0]
+        r = int(im[0][0][0])
+        g = int(im[0][0][1])
+        b = int(im[0][0][2])
+
+        color = [r, g, b]
         return cv2.copyMakeBorder(im, 
                                     top, 
                                     bottom, 

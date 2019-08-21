@@ -4,17 +4,17 @@ from videoMotionProcessor import VideoMotionProcessor
 import util
 
 framesNro = 5
-picSize = 300
+picSize = 500
 rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
 typeOfCut = "Constant"
 combineImages = False
 
 #videoProcessor = VideoCutterProcessor(framesNro, picSize, rotate, typeOfCut)
-videoProcessor = VideoMotionProcessor(picSize, combineImages, rotate = rotate)
+videoProcessor = VideoMotionProcessor(picSize, combineImages)
 
 vid = VideoProcessManager(videoProcessor)
-vid.processPath("D:/desktop/DATASET/CBBA/rotar")
+vid.processPath("D:/desktop/DATASET/CBBA")
 
 """
 i = 1
