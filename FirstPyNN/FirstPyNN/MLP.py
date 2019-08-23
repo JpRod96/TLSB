@@ -63,12 +63,12 @@ def main(flatten = False):
         YO: YO_VALUE
     }
 
-    train, train_labels = getDataset(fullPathTrain, folders, switcher)
+    train, train_labels = getDataset(fullPathTrain, folders, switcher, flatten)
     
     print(train.shape)
     print(train_labels)
 
-    test, test_labels = getDataset(fullPathTest, folders, switcher)
+    test, test_labels = getDataset(fullPathTest, folders, switcher, flatten)
     
     print(test.shape)
     print(test_labels)
@@ -168,9 +168,12 @@ def toBinaryArray(npArray):
     binaryArray = []
     for x in np.nditer(npArray):
         binaryArray.append(x if x>0 else 0)
-    return binaryArray
+    return np.array(binaryArray)
 
-def getDataset(path, folders, switcher, flatten = False):
+def grayScale(photo_data):
+    photo_data[:] = np.max(photo_data,axis=-1,keepdims=1)/2+np.min(photo_data,axis=-1,keepdims=1)/2
+
+def getDataset(path, folders, switcher, flatten):
     dataset = []
     labels = []
 
@@ -183,4 +186,4 @@ def getDataset(path, folders, switcher, flatten = False):
     
     return finalDataset, labels
 
-main()
+main(flatten=True)
