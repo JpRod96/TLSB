@@ -105,7 +105,7 @@ def models():
     models = []
 
     model0 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300, 3)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(32, activation=tf.nn.sigmoid),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
@@ -159,16 +159,22 @@ def chargeFolderContent(dataset, path, labels, value, flatten):
         img = cv2.imread(path+"/"+filename)
         if img is not None:
             if(flatten):
-                dataset.append(toBinaryArray(img))
+                dataset.append(toBinarySet(img))
             else:
                 dataset.append(img)
             labels.append(value)
 
-def toBinaryArray(npArray):
-    binaryArray = []
-    for x in np.nditer(npArray):
-        binaryArray.append(x if x>0 else 0)
-    return np.array(binaryArray)
+def toBinarySet(img):
+    h, w = img.shape[:2]
+    binarySet = [[0 for x in range(w)] for y in range(h)] 
+    for i in range(0, h):
+        for j in range(0, w):
+            r = int(img[i][j][0])
+            g = int(img[i][j][1])
+            b = int(img[i][j][2])
+            binaryValue = 1 if (r>0 or g>0 or b>0) else 0
+            binarySet[i][j] = binaryValue
+    return np.array(binarySet)
 
 def grayScale(photo_data):
     photo_data[:] = np.max(photo_data,axis=-1,keepdims=1)/2+np.min(photo_data,axis=-1,keepdims=1)/2
