@@ -85,27 +85,35 @@ def main(flatten = False):
             results.append((modelAccuracy, history.history))
         overAllHistory.append(results)
 
-    formatArray(overAllHistory)
+    saveTestToTxt(overAllHistory)
+
+def saveTestToTxt(historyArray):
+    f = open("testResults.txt","w+")
+    f.write(formatArray(historyArray))
+    f.close() 
 
 def formatArray(historyArray):
+    string = ""
     for token in historyArray:
         if(isinstance(token, list)):
             for history in token:
-                formatToken(history)
+                string += formatToken(history)
         else:
-            print(token)
+            string += token + "\n"
+    return string
 
 def formatToken(token):
+    string = ""
     accuracy, history = token
-    print("Test accuracy: " + str(accuracy))
-    print(history)
-    print("")
+    string += "Test accuracy: " + str(accuracy) + "\n"
+    string += str(history) + "\n\n"
+    return string
 
 def models():
     models = []
 
     model0 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300)),
+        keras.layers.Flatten(input_shape=(1500, 300, 3)),
         keras.layers.Dense(32, activation=tf.nn.sigmoid),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
@@ -134,7 +142,9 @@ def models():
     models.append((model0, 15))
     models.append((model0, 40))
     models.append((model1, 30))
+    models.append((model1, 60))
     models.append((model2, 60))
+    models.append((model2, 80))
     models.append((model3, 80))
     models.append((model3, 160))
 
@@ -165,6 +175,7 @@ def chargeFolderContent(dataset, path, labels, value, flatten):
             labels.append(value)
 
 def toBinarySet(img):
+    print('Transforming input to binary set...')
     h, w = img.shape[:2]
     binarySet = [[0 for x in range(w)] for y in range(h)] 
     for i in range(0, h):
@@ -174,6 +185,7 @@ def toBinarySet(img):
             b = int(img[i][j][2])
             binaryValue = 1 if (r>0 or g>0 or b>0) else 0
             binarySet[i][j] = binaryValue
+    print('done')
     return np.array(binarySet)
 
 def grayScale(photo_data):
@@ -192,4 +204,4 @@ def getDataset(path, folders, switcher, flatten):
     
     return finalDataset, labels
 
-main(flatten=True)
+main()
