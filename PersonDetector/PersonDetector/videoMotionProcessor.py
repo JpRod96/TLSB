@@ -13,14 +13,19 @@ from PersonDetector import PersonDetector
 class VideoMotionProcessor(VideoProcessorI):
     iterations = 4
     MAX_ALIKE_PERCENTAGE = 31
+    NONE = 'None'
+    EDGE = 'Edges'
+    BLURY_EDGE = 'Blury Edges'
+    GRAYSCALE = 'Grayscale'
 
-    def __init__(self, finalPicSize, toCombine, framesNr = 0, rotate = False):
+    def __init__(self, finalPicSize, toCombine, framesNr = 0, rotate = False, filter=NONE):
         self.picSize = finalPicSize
         self.edgeDetector = EdgeDetector(finalPicSize)
         self.detector = PersonDetector()
         self.combineImages = toCombine
         self.framesNumber = framesNr
         self.rotateImages = rotate
+        self.imageFilter = filter
 
     def process(self, videoPath):
         frames = self.cutVideo(videoPath)
@@ -107,14 +112,13 @@ class VideoMotionProcessor(VideoProcessorI):
             frame = frames[index]
             if self.rotateImages:
                 frame = ndimage.rotate(frame, 270)
-            try:
-                frame = self.detector.detectPersonFromNumpy(frame)
-                frame = self.edgeDetector.make_square(frame)
-                print("Done.\n")
-                frame = cv2.resize(frame, (self.picSize, self.picSize))
-                cv2.imwrite(fileName, frame)
-            except:
-                print("Human not found on frame number "+ str(counter - 1))
+            #try:
+            frame = self.detector.detectPersonFromNumpy(frame)
+            frame = self.applyFilter(frame)
+            print("Done.\n")
+            cv2.imwrite(fileName, frame)
+            #except:
+             #   print("Human not found on frame number "+ str(counter - 1))
     
     def combineFrames(self, frames, indexes):
         x=1
@@ -126,7 +130,7 @@ class VideoMotionProcessor(VideoProcessorI):
             print("Processing frame number "+ str(x) +"...")
             try:
                 treatedImage = self.detector.detectPersonFromNumpy(frame)
-                edgeImages.append(self.edgeDetector.getImageEdgesFromNumpy(treatedImage))
+                edgeImages.append(self.applyFilter(treatedImage))
                 print("Done.\n")
             except:
                 print("Human not found on frame number "+ str(x))
@@ -139,6 +143,18 @@ class VideoMotionProcessor(VideoProcessorI):
             print("Done.")
         else:
             print("Unsuccesful process, theres no human on the video clip "+ self.videoName +"\n")
+    
+
+    def applyFilter(self, frame):
+        if(self.imageFilter == self.EDGE):
+            return self.edgeDetector.getImageEdgesFromNumpy(frame)
+        elif(self.imageFilter == self.GRAYSCALE):
+            return self.edgeDetector.toGrayscale(frame)
+        elif(self.imageFilter == self.BLURY_EDGE):
+            return self.edgeDetector.getImageBluryEdgesFromNumpy(frame)
+        else:
+            squarePic = self.edgeDetector.make_square(frame)
+            return cv2.resize(squarePic, (self.picSize, self.picSize))
     
     def satisfyFramesNumber(self, framesArray):
         if(self.framesNumber > 0):

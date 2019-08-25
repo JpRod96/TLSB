@@ -14,6 +14,22 @@ class EdgeDetector:
         # Convertimos a escala de grises
         edgeImage = self.getImageEdgesFromNumpy(original)
         cv2.imwrite(imageName + "edges" + extension, edgeImage)
+    
+    def toGrayscale(self, image):
+        gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        squarePic = self.make_square(fris)
+        resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
+        return resizedImg
+
+    def getImageBluryEdgesFromNumpy(self, image):
+        med_val = np.median(image)
+        lower = int(max(0,0.7*med_val))
+        upper = int(min(255,1.3*med_val))
+        blurred_img = cv2.blur(image,(5,5))
+        canny = cv2.Canny(blurred_img, lower, upper)
+        squarePic = self.make_square(canny)
+        resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
+        return resizedImg
 
     def getImageEdgesFromNumpy(self, image):
         gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -21,18 +37,6 @@ class EdgeDetector:
         gauss = cv2.GaussianBlur(gris, (5 ,5), 0)
         ## Detectamos los bordes con Canny
         canny = cv2.Canny(gauss, 30, 90)
-        #squarePic = self.make_square(canny)
-        #resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
-
-        #PRUEBA
-        #med_val = np.median(image)
-        #lower = int(max(0,0.7*med_val))
-        #upper = int(min(255,1.3*med_val))
-        #blurred_img = cv2.blur(image,(5,5))
-        #canny = cv2.Canny(blurred_img, lower, upper)
-
-        #gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
         squarePic = self.make_square(canny)
         resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
         return resizedImg
@@ -53,12 +57,14 @@ class EdgeDetector:
         delta_h = desired_size - new_size[0]
         top, bottom = delta_h//2, delta_h-(delta_h//2)
         left, right = delta_w//2, delta_w-(delta_w//2)
-
-        r = int(im[0][0][0])
-        g = int(im[0][0][1])
-        b = int(im[0][0][2])
-
-        color = [r, g, b]
+        color = None
+        if(len(im.shape)>2):
+            r = int(im[0][0][0])
+            g = int(im[0][0][1])
+            b = int(im[0][0][2])
+            color = [r, g, b]
+        else:   
+            color = [0, 0, 0]
         return cv2.copyMakeBorder(im, 
                                     top, 
                                     bottom, 

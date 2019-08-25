@@ -9,12 +9,19 @@ rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
 typeOfCut = "Constant"
 combineImages = False
+filter = 'Blury Edges' #'None' 'Edges' 'Grayscale' Blury Edges'
 
 #videoProcessor = VideoCutterProcessor(framesNro, picSize, rotate, typeOfCut)
-videoProcessor = VideoMotionProcessor(picSize, combineImages)
+videoProcessor = VideoMotionProcessor(picSize, combineImages, filter=filter)
+
+#vid = VideoProcessManager(videoProcessor)
+#vid.processPath("D:/desktop/DATASET/CBBA")
+
+videoProcessor.rotateImages = True
+videoProcessor.imageFilter = 'Edges'
 
 vid = VideoProcessManager(videoProcessor)
-vid.processPath("D:/desktop/DATASET/CBBA")
+vid.processPath("D:/desktop/DATASET/CBBA/rotar")
 
 """
 i = 1
