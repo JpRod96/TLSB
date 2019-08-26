@@ -8,6 +8,7 @@ class PersonDetector:
     detector=None
     execution_path=None
     custom_objects=None
+    SLACKED_PIXELS = 40
 
     def __init__(self): 
         self.execution_path = os.getcwd()
@@ -42,14 +43,21 @@ class PersonDetector:
             raise Exception('No human were found')
 
     def cropImage(self, array, image):
-        x0=self.cleanNumber(array[0])
-        y0=self.cleanNumber(array[1])
-        x1=self.cleanNumber(array[2])
-        y1=self.cleanNumber(array[3])
+        print(image.shape)
+        im_height, im_width, channels = image.shape
+        x0=self.treatNumberLower(array[0])
+        y0=self.treatNumberLower(array[1])
+        x1=self.treatNumberUpper(array[2], im_width)
+        y1=self.treatNumberUpper(array[3], im_height)
         return image[y0:y1, x0:x1]
 
-    def cleanNumber(self, number):
-        return number if number>0 else 1
+    def treatNumberLower(self, number):
+        slackedNumber = number - self.SLACKED_PIXELS
+        return slackedNumber if slackedNumber>0 else 1
+    
+    def treatNumberUpper(self, number, maxNumber):
+        slackedNumber = number + self.SLACKED_PIXELS
+        return slackedNumber if slackedNumber <= maxNumber else number
 
     def getDetectionWHighestPercentage(self, detections):
         highest = None
