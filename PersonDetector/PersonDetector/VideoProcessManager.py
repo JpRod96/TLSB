@@ -9,7 +9,6 @@ class VideoProcessManager:
 
     def __init__(self, videoProcessorImpl):
         self.videoProcessor = videoProcessorImpl
-        #VideoProcessor(framesNro, finalPicSize, rotate, typeOfCut)
 
     def isGivenFileMP4File(self, file):
         finalToken = util.getLastTokenOfPath(file)
