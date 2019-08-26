@@ -21,20 +21,20 @@ class EdgeDetector:
         resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
         return resizedImg
 
-    def getImageBluryEdgesFromNumpy(self, image):
+    def getImageBluryEdgesFromNumpy(self, image, kernelHeight = 5, kernelWidth = 5):
         med_val = np.median(image)
         lower = int(max(0,0.7*med_val))
         upper = int(min(255,1.3*med_val))
-        blurred_img = cv2.blur(image,(5,5))
+        blurred_img = cv2.blur(image,(kernelHeight, kernelWidth))
         canny = cv2.Canny(blurred_img, lower, upper)
         squarePic = self.make_square(canny)
         resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
         return resizedImg
 
-    def getImageEdgesFromNumpy(self, image):
+    def getImageEdgesFromNumpy(self, image, kernelHeight = 5, kernelWidth = 5):
         gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         ## Aplicar suavizado Gaussiano
-        gauss = cv2.GaussianBlur(gris, (5 ,5), 0)
+        gauss = cv2.GaussianBlur(gris, (kernelHeight ,kernelWidth), 0)
         ## Detectamos los bordes con Canny
         canny = cv2.Canny(gauss, 30, 90)
         squarePic = self.make_square(canny)

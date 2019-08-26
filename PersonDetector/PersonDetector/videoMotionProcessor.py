@@ -15,7 +15,7 @@ class VideoMotionProcessor(VideoProcessorI):
     MAX_ALIKE_PERCENTAGE = 31
     NONE = 'None'
     EDGE = 'Edges'
-    BLURY_EDGE = 'Blury Edges'
+    BLURY_EDGE = 'Blury_Edges'
     GRAYSCALE = 'Grayscale'
 
     def __init__(self, finalPicSize, toCombine, framesNr = 0, rotate = False, filter=NONE):
@@ -146,15 +146,23 @@ class VideoMotionProcessor(VideoProcessorI):
     
 
     def applyFilter(self, frame):
-        if(self.imageFilter == self.EDGE):
-            return self.edgeDetector.getImageEdgesFromNumpy(frame)
-        elif(self.imageFilter == self.GRAYSCALE):
+        filterName, KH, KW = self.getFilterToken(self.imageFilter)
+        if(filterName == self.EDGE):
+            return self.edgeDetector.getImageEdgesFromNumpy(frame, kernelHeight = KH, kernelWidth= KW)
+        elif(filterName == self.GRAYSCALE):
             return self.edgeDetector.toGrayscale(frame)
-        elif(self.imageFilter == self.BLURY_EDGE):
-            return self.edgeDetector.getImageBluryEdgesFromNumpy(frame)
+        elif(filterName == self.BLURY_EDGE):
+            return self.edgeDetector.getImageBluryEdgesFromNumpy(frame, kernelHeight = KH, kernelWidth= KW)
         else:
             squarePic = self.edgeDetector.make_square(frame)
             return cv2.resize(squarePic, (self.picSize, self.picSize))
+    
+    def getFilterToken(self, string):
+        tokens = string.split()
+        if(len(tokens) >= 3):
+            return tokens[0], tokens[1], tokens[2]
+        else:
+            return string, 5, 5
     
     def satisfyFramesNumber(self, framesArray):
         if(self.framesNumber > 0):
