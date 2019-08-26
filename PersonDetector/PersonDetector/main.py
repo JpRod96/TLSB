@@ -9,7 +9,7 @@ rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
 typeOfCut = "Constant"
 combineImages = False
-filter = 'Blury_Edges 1 1' # usando kernel de 1x1
+filter = 'Blury_Edges 2 2' # usando kernel de 1x1
 """
   tipos de filtros
   'None' - ningun filtro, devuelve las imagenes detetadas en rgb y el tamaño de imagen pedido
@@ -31,10 +31,10 @@ vid = VideoProcessManager(videoProcessor)
 vid.processPath("D:/desktop/DATASET/CBBA")
 
 videoProcessor.rotateImages = True
-videoProcessor.imageFilter = 'Edges'
+videoProcessor.imageFilter = 'Edges 2 2'
 
 vid = VideoProcessManager(videoProcessor)
-vid.processPath("D:/desktop/DATASET/CBBA/rotar/VID_20190728_144053.mp4")
+vid.processPath("D:/desktop/DATASET/CBBA/rotar")
 
 """
 i = 1

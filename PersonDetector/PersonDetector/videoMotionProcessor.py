@@ -160,7 +160,7 @@ class VideoMotionProcessor(VideoProcessorI):
     def getFilterToken(self, string):
         tokens = string.split()
         if(len(tokens) >= 3):
-            return tokens[0], tokens[1], tokens[2]
+            return tokens[0], int(tokens[1]), int(tokens[2])
         else:
             return string, 5, 5
     
