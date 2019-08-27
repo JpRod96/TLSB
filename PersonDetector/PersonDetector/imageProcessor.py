@@ -1,5 +1,7 @@
 import numpy as np
 import cv2
+from os import listdir
+from os.path import isfile, join
 from edgeDetector import EdgeDetector
 import util
 
@@ -20,7 +22,7 @@ class ImageProcessor:
         return len(finalToken) == 1
     
     def grayScaleImagesOf(self, path):
-         if self.isGivenPathADir(path) :
+        if self.isGivenPathADir(path) :
             imageFiles = self.getImageFilesFromDirectory(path)
             for imageFile in imageFiles:
                 img = cv2.imread(path + "/" + imageFile, -1)
@@ -32,7 +34,7 @@ class ImageProcessor:
             cv2.imwrite(self.combineName(path, "grey"), img)
     
     def blurredEdgeImagesOf(self, path, kH, kw):
-         if self.isGivenPathADir(path) :
+        if self.isGivenPathADir(path) :
             imageFiles = self.getImageFilesFromDirectory(path)
             for imageFile in imageFiles:
                 img = cv2.imread(path + "/" + imageFile, -1)

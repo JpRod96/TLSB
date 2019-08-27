@@ -43,7 +43,6 @@ class PersonDetector:
             raise Exception('No human were found')
 
     def cropImage(self, array, image):
-        print(image.shape)
         im_height, im_width, channels = image.shape
         x0=self.treatNumberLower(array[0])
         y0=self.treatNumberLower(array[1])
