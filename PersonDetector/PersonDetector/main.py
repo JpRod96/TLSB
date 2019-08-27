@@ -1,15 +1,16 @@
 from VideoProcessManager import VideoProcessManager
 from videoCutterProcessor import VideoCutterProcessor
 from videoMotionProcessor import VideoMotionProcessor
+from imageProcessor import ImageProcessor
 import util
 
 framesNro = 5
-picSize = 500
+picSize = 500 #si es 0 el procesado devuelve imagenes sin ningun filtro ni preprocesamiento
 rotate = True
 # typeOfCut = "Constant" || "Probabilistic"
 typeOfCut = "Constant"
 combineImages = False
-filter = 'Blury_Edges 2 2' # usando kernel de 1x1
+filter = 'None' # usando kernel de 1x1
 """
   tipos de filtros
   'None' - ningun filtro, devuelve las imagenes detetadas en rgb y el tamaño de imagen pedido
@@ -24,17 +25,22 @@ filter = 'Blury_Edges 2 2' # usando kernel de 1x1
                   Al final se devuelve un imagen en escala de grises con los bordes detectados
 """
 
-#videoProcessor = VideoCutterProcessor(framesNro, picSize, rotate, typeOfCut)
-videoProcessor = VideoMotionProcessor(picSize, combineImages, filter=filter)
+#videoProcessor = VideoCutterProcessor(framesNro, picSize, rotate, typeOfCut) #procesador de corte sin heuristica
+videoProcessor = VideoMotionProcessor(picSize, combineImages, filter=filter) #consultar el constructor de la clase
 
 vid = VideoProcessManager(videoProcessor)
-vid.processPath("D:/desktop/DATASET/CBBA")
+vid.processPath("D:/desktop/DATASET/CBBA/20190805_161226.mp4")
 
 videoProcessor.rotateImages = True
 videoProcessor.imageFilter = 'Edges 2 2'
 
 vid = VideoProcessManager(videoProcessor)
 vid.processPath("D:/desktop/DATASET/CBBA/rotar")
+
+#ejemplo Image processor
+
+imageProcessor = ImageProcessor(picSize)
+imageProcessor.blurredEdgeImagesOf("D:/desktop/DATASET/CBBA", 3, 3)
 
 """
 i = 1
