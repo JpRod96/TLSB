@@ -112,13 +112,14 @@ class VideoMotionProcessor(VideoProcessorI):
             frame = frames[index]
             if self.rotateImages:
                 frame = ndimage.rotate(frame, 270)
-            #try:
-            frame = self.detector.detectPersonFromNumpy(frame)
-            frame = self.applyFilter(frame)
-            print("Done.\n")
-            cv2.imwrite(fileName, frame)
-            #except:
-             #   print("Human not found on frame number "+ str(counter - 1))
+            try:
+                frame = self.detector.detectPersonFromNumpy(frame)
+                if(self.picSize > 0):
+                    frame = self.applyFilter(frame)
+                print("Done.\n")
+                cv2.imwrite(fileName, frame)
+            except:
+                print("Human not found on frame number "+ str(counter - 1))
     
     def combineFrames(self, frames, indexes):
         x=1
