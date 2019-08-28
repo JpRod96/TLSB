@@ -24,23 +24,44 @@ QUERER_VALUE = 8
 YO_VALUE = 9
 """
 
-GESTO1_VALUE = 0
-GESTO2_VALUE = 1
-GESTO3_VALUE = 2
+HOLA_VALUE = 0
+AUTO_VALUE = 1
+CAFE_VALUE = 2
+ADIOS_VALUE = 3
+GRACIAS_VALUE = 0
+CBBA_VALUE = 1
+CUAL_VALUE = 2
+POR_FAVOR_VALUE = 3
+QUERER_VALUE = 4
+YO_VALUE = 9
 
-
-GESTO1 = "gesto1"
-GESTO2 = "gesto2"
-GESTO3 = "gesto3"
+HOLA = "HOLA"
+AUTO = "AUTO"
+CAFE = "CAFE"
+ADIOS = "ADIOS"
+GRACIAS = "GRACIAS"
+CBBA = "CBBA"
+CUAL = "CUAL"
+POR_FAVOR = "POR_FAVOR"
+QUERER = "QUERER"
+YO = "YO"
 
 
 def main(flatten = False):
-    folders = [GESTO1, GESTO2, GESTO3]
+     #folders = [HOLA, AUTO, CAFE, ADIOS, GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER, YO]
+    folders = [GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER]
     train_labels = []
     switcher = {
-        GESTO1: GESTO1_VALUE, 
-        GESTO2: GESTO2_VALUE, 
-        GESTO3: GESTO3_VALUE
+     HOLA: HOLA_VALUE, 
+        AUTO: AUTO_VALUE, 
+        CAFE: CAFE_VALUE, 
+        ADIOS: ADIOS_VALUE, 
+        GRACIAS: GRACIAS_VALUE, 
+        CBBA: CBBA_VALUE, 
+        CUAL: CUAL_VALUE, 
+        POR_FAVOR: POR_FAVOR_VALUE, 
+        QUERER: QUERER_VALUE, 
+        YO: YO_VALUE
     }
 
     train, train_labels = getDataset(fullPathTrain, folders, switcher, flatten)
