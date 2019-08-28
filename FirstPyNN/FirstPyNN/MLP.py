@@ -24,43 +24,23 @@ QUERER_VALUE = 8
 YO_VALUE = 9
 """
 
-HOLA_VALUE = 0
-AUTO_VALUE = 1
-CAFE_VALUE = 2
-ADIOS_VALUE = 3
-GRACIAS_VALUE = 0
-CBBA_VALUE = 1
-CUAL_VALUE = 2
-POR_FAVOR_VALUE = 3
-QUERER_VALUE = 4
-YO_VALUE = 9
+GESTO1_VALUE = 0
+GESTO2_VALUE = 1
+GESTO3_VALUE = 2
 
-HOLA = "HOLA"
-AUTO = "AUTO"
-CAFE = "CAFE"
-ADIOS = "ADIOS"
-GRACIAS = "GRACIAS"
-CBBA = "CBBA"
-CUAL = "CUAL"
-POR_FAVOR = "POR_FAVOR"
-QUERER = "QUERER"
-YO = "YO"
+
+GESTO1 = "gesto1"
+GESTO2 = "gesto2"
+GESTO3 = "gesto3"
+
 
 def main(flatten = False):
-    #folders = [HOLA, AUTO, CAFE, ADIOS, GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER, YO]
-    folders = [GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER]
+    folders = [GESTO1, GESTO2, GESTO3]
     train_labels = []
     switcher = {
-        HOLA: HOLA_VALUE, 
-        AUTO: AUTO_VALUE, 
-        CAFE: CAFE_VALUE, 
-        ADIOS: ADIOS_VALUE, 
-        GRACIAS: GRACIAS_VALUE, 
-        CBBA: CBBA_VALUE, 
-        CUAL: CUAL_VALUE, 
-        POR_FAVOR: POR_FAVOR_VALUE, 
-        QUERER: QUERER_VALUE, 
-        YO: YO_VALUE
+        GESTO1: GESTO1_VALUE, 
+        GESTO2: GESTO2_VALUE, 
+        GESTO3: GESTO3_VALUE
     }
 
     train, train_labels = getDataset(fullPathTrain, folders, switcher, flatten)
@@ -77,11 +57,12 @@ def main(flatten = False):
     test_model = models()
     for index in range(0, len(test_model)):
         model, epochs = test_model[index]
+        weights = model.get_weights()
         overAllHistory.append("--------------------------------------------------------------------------------------------------------------------")
         overAllHistory.append("test No: " + str(index))
         results = []
         for y in range(0, 10):
-            modelAccuracy, history =  trainModel(model, train, train_labels, test, test_labels, epochs)
+            modelAccuracy, history =  trainModel(model, train, train_labels, test, test_labels, epochs, weights)
             results.append((modelAccuracy, history.history))
         overAllHistory.append(results)
 
@@ -113,31 +94,47 @@ def models():
     models = []
 
     model0 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300, 3)),
+        keras.layers.Flatten(input_shape=(500, 500)),
         keras.layers.Dense(32, activation=tf.nn.sigmoid),
-        keras.layers.Dense(5, activation=tf.nn.softmax)
+        keras.layers.Dense(3, activation=tf.nn.softmax)
     ])
+
+    model0.compile(optimizer='adam', 
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
 
     model1 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300, 3)),
+        keras.layers.Flatten(input_shape=(500, 500)),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
-        keras.layers.Dense(5, activation=tf.nn.softmax)
+        keras.layers.Dense(3, activation=tf.nn.softmax)
     ])
+
+    model1.compile(optimizer='adam', 
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
 
     model2 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300, 3)),
+        keras.layers.Flatten(input_shape=(500, 500)),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
         keras.layers.Dense(16, activation=tf.nn.relu),
-        keras.layers.Dense(5, activation=tf.nn.softmax)
+        keras.layers.Dense(3, activation=tf.nn.softmax)
     ])
 
+    model2.compile(optimizer='adam', 
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+#parece el mejor
     model3 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300, 3)),
+        keras.layers.Flatten(input_shape=(500, 500)),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
         keras.layers.Dense(8, activation=tf.nn.relu),
-        keras.layers.Dense(5, activation=tf.nn.softmax)
+        keras.layers.Dense(3, activation=tf.nn.softmax)
     ])
+
+    model3.compile(optimizer='adam', 
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
 
     models.append((model0, 15))
     models.append((model0, 40))
@@ -150,23 +147,40 @@ def models():
 
     return models
 
-def trainModel(model, trainSet, trainLabels, testSet, testLabels, epochs):
-    model.compile(optimizer='adam', 
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
-
+def trainModel(model, trainSet, trainLabels, testSet, testLabels, epochs, weights):
+    shuffle_weights(model, weights=weights)
     model.summary()
 
     history = model.fit(trainSet, trainLabels, epochs=epochs)
     test_loss, test_acc = model.evaluate(testSet, testLabels)
-#
+
     print('Test accuracy:', test_acc)
 
     return test_acc, history
 
+
+def shuffle_weights(model, weights=None):
+    """Randomly permute the weights in `model`, or the given `weights`.
+
+    This is a fast approximation of re-initializing the weights of a model.
+
+    Assumes weights are distributed independently of the dimensions of the weight tensors
+      (i.e., the weights have the same distribution along each dimension).
+
+    :param Model model: Modify the weights of the given model.
+    :param list(ndarray) weights: The model's weights will be replaced by a random permutation of these weights.
+      If `None`, permute the model's current weights.
+    """
+    if weights is None:
+        weights = model.get_weights()
+    weights = [np.random.permutation(w.flat).reshape(w.shape) for w in weights]
+    # Faster, but less random: only permutes along the first dimension
+    # weights = [np.random.permutation(w) for w in weights]
+    model.set_weights(weights)
+
 def chargeFolderContent(dataset, path, labels, value, flatten):
     for filename in os.listdir(path):
-        img = cv2.imread(path+"/"+filename)
+        img = cv2.imread(path+"/"+filename, cv2.IMREAD_GRAYSCALE)
         if img is not None:
             if(flatten):
                 dataset.append(toBinarySet(img))
