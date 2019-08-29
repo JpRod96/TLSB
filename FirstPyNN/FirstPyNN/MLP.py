@@ -115,9 +115,9 @@ def models():
     models = []
 
     model0 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(32, activation=tf.nn.sigmoid),
-        keras.layers.Dense(3, activation=tf.nn.softmax)
+        keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
     model0.compile(optimizer='adam', 
@@ -125,9 +125,9 @@ def models():
               metrics=['accuracy'])
 
     model1 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
-        keras.layers.Dense(3, activation=tf.nn.softmax)
+        keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
     model1.compile(optimizer='adam', 
@@ -135,10 +135,10 @@ def models():
               metrics=['accuracy'])
 
     model2 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
         keras.layers.Dense(16, activation=tf.nn.relu),
-        keras.layers.Dense(3, activation=tf.nn.softmax)
+        keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
     model2.compile(optimizer='adam', 
@@ -146,11 +146,11 @@ def models():
               metrics=['accuracy'])
 #parece el mejor
     model3 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
         keras.layers.Dense(8, activation=tf.nn.relu),
-        keras.layers.Dense(3, activation=tf.nn.softmax)
+        keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
     model3.compile(optimizer='adam', 
@@ -201,7 +201,7 @@ def shuffle_weights(model, weights=None):
 
 def chargeFolderContent(dataset, path, labels, value, flatten):
     for filename in os.listdir(path):
-        img = cv2.imread(path+"/"+filename, cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread(path+"/"+filename)
         if img is not None:
             if(flatten):
                 dataset.append(toBinarySet(img))
@@ -239,4 +239,4 @@ def getDataset(path, folders, switcher, flatten):
     
     return finalDataset, labels
 
-main()
+main(True)
