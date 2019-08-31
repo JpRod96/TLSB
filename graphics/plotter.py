@@ -2,6 +2,8 @@ from os import listdir
 from os.path import isfile, join
 import json
 import matplotlib.pyplot as plt
+import asyncio
+import time
 import sys
 sys.path.insert(0, 'D:/desktop/TLSB/PersonDetector/PersonDetector')
 import util
@@ -23,10 +25,9 @@ class Plotter:
     def plotTxtFile(self, filePath):
         txtFile = open(filePath,"r")
         lines = txtFile.readlines()
+        txtFile.close()
 
         self.findTestSegments(lines, "test")
-
-        txtFile.close()
     
     def findTestSegments(self, lines, fileName):
         for index in range(0, len(lines)):
@@ -39,9 +40,9 @@ class Plotter:
         line = lines[initialIndex]
         index = initialIndex
         cont = 1
-        while(not ("---------" in line)):
+        while(not ("------------" in line)):
             self.plotEntry(lines, index, fileName + str(cont))
-            cont+1
+            cont += 1
             index += 3
             if(index < len(lines)):
                 line = lines[index]
@@ -53,7 +54,7 @@ class Plotter:
         objectLine = objectLine.replace(chr(39), '"')
         history = json.loads(objectLine)
 
-        plt.figure(figsize=(10, 5))
+        fig = plt.figure(figsize=(10, 5))
 
         plt.subplot(121)
         plt.plot(history['acc'])
@@ -65,10 +66,11 @@ class Plotter:
         plt.plot(history['loss'])
         plt.ylabel('loss')
         plt.xlabel('epochs')
+        plt.ylim(0, 3)
 
         plt.suptitle(lines[initialIndex])
         plt.savefig(name + ".png")
-
+        plt.close(fig)
 
     def getTxtFilesFromDirectory(self, path):
         files = [f for f in listdir(path) if isfile(join(path, f))]
