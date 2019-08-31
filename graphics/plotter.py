@@ -17,14 +17,39 @@ class Plotter:
         finalToken = util.getLastTokenOfPath(path)
         return len(finalToken) == 1
     
-    #def plotTxtFromPath(self, path):
+    #def plotTxtsFromPath(self, path):
         
     
     def plotTxtFile(self, filePath):
         txtFile = open(filePath,"r")
         lines = txtFile.readlines()
 
-        objectLine = lines[3]
+        self.findTestSegments(lines, "test")
+
+        txtFile.close()
+    
+    def findTestSegments(self, lines, fileName):
+        for index in range(0, len(lines)):
+            line = lines[index]
+            if("--------" in line):
+                testNumber = lines[index + 1].split()[2]
+                self.findTestEntries(lines, index + 2, fileName + testNumber)
+
+    def findTestEntries(self, lines, initialIndex, fileName):
+        line = lines[initialIndex]
+        index = initialIndex
+        cont = 1
+        while(not ("---------" in line)):
+            self.plotEntry(lines, index, fileName + str(cont))
+            cont+1
+            index += 3
+            if(index < len(lines)):
+                line = lines[index]
+            else:
+                break
+    
+    def plotEntry(self, lines, initialIndex, name):
+        objectLine = lines[initialIndex + 1]
         objectLine = objectLine.replace(chr(39), '"')
         history = json.loads(objectLine)
 
@@ -41,9 +66,8 @@ class Plotter:
         plt.ylabel('loss')
         plt.xlabel('epochs')
 
-        plt.suptitle(lines[2])
-
-        plt.savefig('test.png')
+        plt.suptitle(lines[initialIndex])
+        plt.savefig(name + ".png")
 
 
     def getTxtFilesFromDirectory(self, path):
