@@ -1,5 +1,6 @@
 from os import listdir
 from os.path import isfile, join
+import os
 import json
 import matplotlib.pyplot as plt
 import asyncio
@@ -19,15 +20,24 @@ class Plotter:
         finalToken = util.getLastTokenOfPath(path)
         return len(finalToken) == 1
     
-    #def plotTxtsFromPath(self, path):
+    def plotTxtsFromPath(self, path):
+        if self.isGivenPathADir(path) :
+            txtFiles = self.getTxtFilesFromDirectory(path)
+            for txtFile in txtFiles:
+                fileName = util.getLastTokenOfPath(txtFile)[0]
+                os.mkdir(fileName)
+                self.plotTxtFile(path + "/" + txtFile, fileName + "/" + fileName)
+        else :
+            fileName = util.getLastTokenOfPath(txtFile)[0]
+            self.plotTxtFile(path, fileName)
         
     
-    def plotTxtFile(self, filePath):
+    def plotTxtFile(self, filePath, name):
         txtFile = open(filePath,"r")
         lines = txtFile.readlines()
         txtFile.close()
 
-        self.findTestSegments(lines, "test")
+        self.findTestSegments(lines, name)
     
     def findTestSegments(self, lines, fileName):
         for index in range(0, len(lines)):

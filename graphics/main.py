@@ -1,6 +1,8 @@
 from plotter import Plotter
 
-path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/testResultsTirasBinariasDROPOUT.txt"
+pathFile = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/testResultsTirasBinariasDROPOUT.txt"
+path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN"
 
 plotter = Plotter()
-plotter.plotTxtFile(path)
+plotter.plotTxtsFromPath(path)
+#plotter.plotTxtFile(pathFile)
