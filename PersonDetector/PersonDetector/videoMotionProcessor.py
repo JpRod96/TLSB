@@ -4,6 +4,7 @@ import util
 import cv2
 import numpy as np
 from scipy.signal import argrelmax
+from scipy.signal import argrelmin
 from scipy import ndimage
 from os import listdir
 from os.path import isfile, join
@@ -15,17 +16,19 @@ class VideoMotionProcessor(VideoProcessorI):
     MAX_ALIKE_PERCENTAGE = 31
     NONE = 'None'
     EDGE = 'Edges'
-    BLURY_EDGE = 'Blury_Edges'
+    BLURRY_EDGE = 'Blurry_Edges'
     GRAYSCALE = 'Grayscale'
+    AUGMENTED_SIZE = 5
 
-    def __init__(self, finalPicSize, toCombine, framesNr = 0, rotate = False, filter=NONE):
-        self.picSize = finalPicSize
-        self.edgeDetector = EdgeDetector(finalPicSize)
+    def __init__(self, final_pic_size, to_combine, frames_nr=0, rotate=False, filter=NONE, aug_processor=None):
+        self.picSize = final_pic_size
+        self.edgeDetector = EdgeDetector(final_pic_size)
         self.detector = PersonDetector()
-        self.combineImages = toCombine
-        self.framesNumber = framesNr
+        self.combineImages = to_combine
+        self.framesNumber = frames_nr
         self.rotateImages = rotate
         self.imageFilter = filter
+        self.augmentedProcessor = aug_processor
 
     def process(self, videoPath):
         frames = self.cutVideo(videoPath)
@@ -107,7 +110,7 @@ class VideoMotionProcessor(VideoProcessorI):
         counter = 1
         for index in indexes:
             print("Processing frame number "+ str(counter) +"...")
-            fileName = self.directory +"/"+ self.videoName + str(counter) +  ".jpg"
+            fileName = self.directory +"/"+ self.videoName + str(counter)
             counter += 1
             frame = frames[index]
             if self.rotateImages:
@@ -117,13 +120,13 @@ class VideoMotionProcessor(VideoProcessorI):
                 if(self.picSize > 0):
                     frame = self.applyFilter(frame)
                 print("Done.\n")
-                cv2.imwrite(fileName, frame)
+                cv2.imwrite(fileName + ".jpg", frame)
             except:
                 print("Human not found on frame number "+ str(counter - 1))
     
     def combineFrames(self, frames, indexes):
         x=1
-        edgeImages=[]
+        edge_images=[]
         for index in indexes:
             frame = frames[index]
             if self.rotateImages:
@@ -131,29 +134,69 @@ class VideoMotionProcessor(VideoProcessorI):
             print("Processing frame number "+ str(x) +"...")
             try:
                 treatedImage = self.detector.detectPersonFromNumpy(frame)
-                edgeImages.append(self.applyFilter(treatedImage))
+                edge_images.append(self.applyFilter(treatedImage))
                 print("Done.\n")
             except:
                 print("Human not found on frame number "+ str(x))
             x=x+1
-        edgeImages = self.satisfyFramesNumber(edgeImages)
-        if(len(edgeImages)>0):
-            print("Concatenating all images")
-            data = util.combineImages(edgeImages)
-            util.saveImageToPath(data, self.videoName + "Edges", ".jpg", self.directory)
-            print("Done.")
-        else:
-            print("Unsuccesful process, theres no human on the video clip "+ self.videoName +"\n")
+        edge_images = self.satisfyFramesNumber(edge_images)
+        file_name = self.videoName + "Edges"
+        self.concat_images(edge_images, file_name)
     
+    def concat_images(self, images, file_name):
+        if self.augmentedProcessor is None:
+            if len(images) > 0:
+                self.create_strip(images, file_name)
+            else:
+                print("Unsuccessful process, there's no human on the video clip " + self.videoName + "\n")
+        else:
+            self.augment_image_strip(images)
+
+    def create_strip(self, image_strip, file_name):
+        print("Concatenating all images")
+        data = util.combineImages(image_strip)
+        util.saveImageToPath(data, file_name, ".jpg", self.directory)
+        print("Done.")
+
+    def augment_image_strip(self, images_strip):
+        if len(images_strip) > 0:
+            print("Augmenting image strip...")
+
+            for x in range(0, self.AUGMENTED_SIZE):
+                augmented_strip = []
+
+                for image in images_strip:
+                    if len(image.shape) == 3:
+                        image = np.expand_dims(image, axis=0)
+                    else:
+                        image = np.expand_dims(image, axis=0)
+                        image = np.expand_dims(image, axis=3)
+                        print(image.shape)
+
+                    augmented_image_iterator = self.augmentedProcessor.flow(image, batch_size=1)
+
+                    for augmented_image in augmented_image_iterator:
+                        image = np.squeeze(augmented_image, axis=0)
+                        break
+                    augmented_strip.append(image)
+
+                print("Augmented strip number " + str(x+1) + " generated")
+                file_name = self.videoName + "EdgesAugmented" + str(x+1)
+                self.create_strip(augmented_strip, file_name)
+            print("Saving original strip")
+            file_name = self.videoName + "EdgesOriginal"
+            self.create_strip(images_strip, file_name)
+        else:
+            print("Unsuccessful process, there's no human on the video clip " + self.videoName + "\n")
 
     def applyFilter(self, frame):
-        filterName, KH, KW = self.getFilterToken(self.imageFilter)
-        if(filterName == self.EDGE):
-            return self.edgeDetector.getImageEdgesFromNumpy(frame, kernelHeight = KH, kernelWidth= KW)
-        elif(filterName == self.GRAYSCALE):
+        filter_name, kh, kw = self.getFilterToken(self.imageFilter)
+        if filter_name == self.EDGE:
+            return self.edgeDetector.getImageEdgesFromNumpy(frame, kernelHeight = kh, kernelWidth= kw)
+        elif filter_name == self.GRAYSCALE:
             return self.edgeDetector.toGrayscale(frame)
-        elif(filterName == self.BLURY_EDGE):
-            return self.edgeDetector.getImageBluryEdgesFromNumpy(frame, kernelHeight = KH, kernelWidth= KW)
+        elif filter_name == self.BLURRY_EDGE:
+            return self.edgeDetector.getImageBluryEdgesFromNumpy(frame, kernelHeight = kh, kernelWidth= kw)
         else:
             squarePic = self.edgeDetector.make_square(frame)
             return cv2.resize(squarePic, (self.picSize, self.picSize))
