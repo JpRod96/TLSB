@@ -34,7 +34,7 @@ class EdgeDetector:
     def getImageEdgesFromNumpy(self, image, kernelHeight = 5, kernelWidth = 5):
         gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         ## Aplicar suavizado Gaussiano
-        gauss = cv2.GaussianBlur(gris, (kernelHeight ,kernelWidth), 0)
+        gauss = cv2.GaussianBlur(gris, (kernelHeight, kernelWidth), 0)
         ## Detectamos los bordes con Canny
         canny = cv2.Canny(gauss, 30, 90)
         squarePic = self.make_square(canny)

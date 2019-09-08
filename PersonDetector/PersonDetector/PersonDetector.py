@@ -8,7 +8,7 @@ class PersonDetector:
     detector = None
     execution_path = None
     custom_objects = None
-    SLACKED_PIXELS = 40
+    SLACKED_PIXELS = 50
 
     def __init__(self):
         self.execution_path = os.getcwd()
