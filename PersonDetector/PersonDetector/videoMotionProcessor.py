@@ -20,36 +20,38 @@ class VideoMotionProcessor(VideoProcessorI):
     GRAYSCALE = 'Grayscale'
     AUGMENTED_SIZE = 5
 
-    def __init__(self, final_pic_size, to_combine, frames_nr=0, rotate=False, filter=NONE, aug_processor=None):
+    def __init__(self, final_pic_size, to_combine, frames_nr=0, rotate=False, img_filter=NONE, aug_processor=None):
         self.picSize = final_pic_size
         self.edgeDetector = EdgeDetector(final_pic_size)
         self.detector = PersonDetector()
         self.combineImages = to_combine
         self.framesNumber = frames_nr
         self.rotateImages = rotate
-        self.imageFilter = filter
+        self.imageFilter = img_filter
         self.augmentedProcessor = aug_processor
+        self.videoName = ""
+        self.directory = ""
 
     def process(self, video_path):
         frames = self.cutVideo(video_path)
-        record = self.getAlikeWeights(frames)
+        record = self.get_alike_weights(frames)
         self.directory = util.getPathOfVideoDirectory(video_path)
         self.videoName = util.getLastTokenOfPath(video_path)[0]
 
-        maximaIndexes, maximaValues, globalIndexes = self.processForGettingMaxAlike(record)
+        maxima_indexes, maxima_values, global_indexes = self.process_for_getting_max_alike(record)
 
-        print(maximaIndexes)
-        print(maximaValues)
-        print(globalIndexes)
+        print(maxima_indexes)
+        print(maxima_values)
+        print(global_indexes)
 
-        globalIndexes = self.postProcessFilter(frames, globalIndexes)
+        global_indexes = self.post_process_filter(frames, global_indexes)
 
         if self.combineImages:
-            self.combine_frames(frames, globalIndexes)
+            self.combine_frames(frames, global_indexes)
         else:
-            self.saveCriticalFrames(frames, globalIndexes)
+            self.save_critical_frames(frames, global_indexes)
 
-    def postProcessFilter(self, critical_frames, indexes):
+    def post_process_filter(self, critical_frames, indexes):
         print("Starting post-process filter")
 
         final_frames_indexes = []
@@ -69,12 +71,12 @@ class VideoMotionProcessor(VideoProcessorI):
             compare_frame = actual_frame
             compare_frame_index = global_index
             cont += 1
-            self.printProgressBar(cont, len(indexes) - 1, prefix='Post-Process:', suffix='Complete', length=25)
+            self.print_progress_bar(cont, len(indexes) - 1, prefix='Post-Process:', suffix='Complete', length=25)
 
         final_frames_indexes.append(compare_frame_index)
         return final_frames_indexes
 
-    def processForGettingMaxAlike(self, weigths):
+    def process_for_getting_max_alike(self, weigths):
         maxima_values = weigths
         maxima_indexes = None
         global_indexes = np.arange(0, len(maxima_values), 1)
@@ -90,23 +92,23 @@ class VideoMotionProcessor(VideoProcessorI):
 
         return maxima_indexes, maxima_values, global_indexes
 
-    def processForGettingMinAlike(self, weigths):
-        minimaValues = weigths
-        minimaIndexes = None
-        globalIndexes = np.arange(0, len(minimaValues), 1)
+    def process_for_getting_min_alike(self, weigths):
+        minima_values = weigths
+        minima_indexes = None
+        global_indexes = np.arange(0, len(minima_values), 1)
 
         # plt.plot(minimaValues)
         # plt.ylabel('Alike percentage')
         # plt.show()
 
         for x in range(1, self.iterations):
-            minimaIndexes = argrelmin(minimaValues)[0]
-            minimaValues = minimaValues[minimaIndexes]
-            globalIndexes = globalIndexes[minimaIndexes]
+            minima_indexes = argrelmin(minima_values)[0]
+            minima_values = minima_values[minima_indexes]
+            global_indexes = global_indexes[minima_indexes]
 
-        return minimaIndexes, minimaValues, globalIndexes
+        return minima_indexes, minima_values, global_indexes
 
-    def saveCriticalFrames(self, frames, indexes):
+    def save_critical_frames(self, frames, indexes):
         counter = 1
         for index in indexes:
             print("Processing frame number " + str(counter) + "...")
@@ -118,7 +120,7 @@ class VideoMotionProcessor(VideoProcessorI):
             try:
                 frame = self.detector.detectPersonFromNumpy(frame)
                 if self.picSize > 0:
-                    frame = self.applyFilter(frame)
+                    frame = self.apply_filter(frame)
                 print("Done.\n")
                 cv2.imwrite(file_name + ".jpg", frame)
             except:
@@ -134,12 +136,12 @@ class VideoMotionProcessor(VideoProcessorI):
             print("Processing frame number " + str(x) + "...")
             try:
                 treated_image = self.detector.detectPersonFromNumpy(frame)
-                edge_images.append(self.applyFilter(treated_image))
+                edge_images.append(self.apply_filter(treated_image))
                 print("Done.\n")
             except:
                 print("Human not found on frame number " + str(x))
             x = x + 1
-        edge_images = self.satisfyFramesNumber(edge_images)
+        edge_images = self.satisfy_frames_number(edge_images)
         file_name = self.videoName + "Edges"
         self.concat_images(edge_images, file_name)
 
@@ -190,8 +192,8 @@ class VideoMotionProcessor(VideoProcessorI):
         else:
             print("Unsuccessful process, there's no human on the video clip " + self.videoName + "\n")
 
-    def applyFilter(self, frame):
-        filter_name, kh, kw = self.getFilterToken(self.imageFilter)
+    def apply_filter(self, frame):
+        filter_name, kh, kw = self.get_filter_token(self.imageFilter)
         if filter_name == self.EDGE:
             return self.edgeDetector.getImageEdgesFromNumpy(frame, kernelHeight=kh, kernelWidth=kw)
         elif filter_name == self.GRAYSCALE:
@@ -202,14 +204,14 @@ class VideoMotionProcessor(VideoProcessorI):
             square_pic = self.edgeDetector.make_square(frame)
             return cv2.resize(square_pic, (self.picSize, self.picSize))
 
-    def getFilterToken(self, string):
+    def get_filter_token(self, string):
         tokens = string.split()
         if len(tokens) >= 3:
             return tokens[0], int(tokens[1]), int(tokens[2])
         else:
             return string, 5, 5
 
-    def satisfyFramesNumber(self, frames_array):
+    def satisfy_frames_number(self, frames_array):
         if self.framesNumber > 0:
             if self.framesNumber > len(frames_array):
                 self.increaseArrayLength(frames_array)
@@ -232,34 +234,34 @@ class VideoMotionProcessor(VideoProcessorI):
     def cutVideo(self, videoPath):
         cap = cv2.VideoCapture(videoPath)
         print("Video " + videoPath + " loaded")
-        frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        print(str(frameCount) + " frames to process...")
-        listOfFrames = []
+        frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        print(str(frame_count) + " frames to process...")
+        list_of_frames = []
         cont = 0
-        while (cap.isOpened() and cont < frameCount):
+        while cap.isOpened() and cont < frame_count:
             ret, frame = cap.read()
-            listOfFrames.append(frame)
+            list_of_frames.append(frame)
             cont += 1
         cap.release()
-        return listOfFrames
+        return list_of_frames
 
-    def getAlikeWeights(self, frames):
-        frameCount = len(frames)
+    def get_alike_weights(self, frames):
+        frame_count = len(frames)
         weights = []
         cont = 0
-        lastFrame = None
-        onGoingFrame = None
+        last_frame = None
+        on_going_frame = None
 
-        for index in range(0, frameCount):
+        for index in range(0, frame_count):
             frame = frames[index]
-            lastFrame = onGoingFrame
-            onGoingFrame = frame
+            last_frame = on_going_frame
+            on_going_frame = frame
             cont += 1
-            if (cont > 1):
-                match = self.compare(lastFrame, onGoingFrame)
+            if cont > 1:
+                match = self.compare(last_frame, on_going_frame)
                 weights.append(match)
-                self.printProgressBar(cont, frameCount, prefix='Progress:', suffix='Complete', length=50)
-            if (cont >= frameCount):
+                self.print_progress_bar(cont, frame_count, prefix='Progress:', suffix='Complete', length=50)
+            if cont >= frame_count:
                 break
         return np.array(weights)
 
@@ -290,10 +292,10 @@ class VideoMotionProcessor(VideoProcessorI):
 
     # make utilitary
 
-    def printProgressBar(self, iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+    def print_progress_bar(self, iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-        filledLength = int(length * iteration // total)
-        bar = fill * filledLength + '-' * (length - filledLength)
+        filled_length = int(length * iteration // total)
+        bar = fill * filled_length + '-' * (length - filled_length)
         print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
         if iteration == total:
             print()
