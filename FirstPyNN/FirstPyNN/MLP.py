@@ -50,7 +50,6 @@ YO = "YO"
 def main(flatten=False):
     # folders = [HOLA, AUTO, CAFE, ADIOS, GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER, YO]
     folders = [GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER]
-    train_labels = []
     switcher = {
         HOLA: HOLA_VALUE,
         AUTO: AUTO_VALUE,
@@ -73,34 +72,34 @@ def main(flatten=False):
 
     print(test.shape)
     print(test_labels)
-    overAllHistory = []
+    over_all_history = []
 
     test_model = models()
     for index in range(0, len(test_model)):
         model, epochs = test_model[index]
         weights = model.get_weights()
-        overAllHistory.append(
-            "--------------------------------------------------------------------------------------------------------------------")
-        overAllHistory.append("test No: " + str(index))
+        over_all_history.append(
+            "--------------------------------------------------------------------------------------------------------")
+        over_all_history.append("test No: " + str(index))
         results = []
-        for y in range(0, 10):
-            modelAccuracy, history = trainModel(model, train, train_labels, test, test_labels, epochs, weights)
-            results.append((modelAccuracy, history.history))
-        overAllHistory.append(results)
+        for y in range(0, 15):
+            model_accuracy, history = trainModel(model, train, train_labels, test, test_labels, epochs, weights)
+            results.append((model_accuracy, history.history))
+        over_all_history.append(results)
 
-    saveTestToTxt(overAllHistory)
+    save_test_to_txt(over_all_history)
 
 
-def saveTestToTxt(historyArray):
+def save_test_to_txt(history_array):
     f = open("testResults.txt", "w+")
-    f.write(formatArray(historyArray))
+    f.write(format_array(history_array))
     f.close()
 
 
-def formatArray(historyArray):
+def format_array(history_array):
     string = ""
-    for token in historyArray:
-        if (isinstance(token, list)):
+    for token in history_array:
+        if isinstance(token, list):
             for history in token:
                 string += formatToken(history)
         else:
@@ -120,7 +119,7 @@ def models():
     models = []
 
     model0 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300, 3)),
+        keras.layers.Flatten(input_shape=(2500, 500)),
         keras.layers.Dropout(0.5),
         keras.layers.Dense(32, activation=tf.nn.sigmoid),
         keras.layers.Dropout(0.5),
@@ -132,7 +131,7 @@ def models():
                    metrics=['accuracy'])
 
     model1 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300, 3)),
+        keras.layers.Flatten(input_shape=(2500, 500)),
         keras.layers.Dropout(0.5),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
         keras.layers.Dropout(0.5),
@@ -144,7 +143,7 @@ def models():
                    metrics=['accuracy'])
 
     model2 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300, 3)),
+        keras.layers.Flatten(input_shape=(2500, 500)),
         keras.layers.Dropout(0.5),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
         keras.layers.Dropout(0.5),
@@ -158,7 +157,7 @@ def models():
                    metrics=['accuracy'])
     # parece el mejor
     model3 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(1500, 300, 3)),
+        keras.layers.Flatten(input_shape=(2500, 500)),
         keras.layers.Dropout(0.5),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
         keras.layers.Dropout(0.5),
@@ -219,7 +218,7 @@ def shuffle_weights(model, weights=None):
 
 def chargeFolderContent(dataset, path, labels, value, flatten):
     for filename in os.listdir(path):
-        img = cv2.imread(path + "/" + filename)
+        img = cv2.imread(path + "/" + filename, cv2.IMREAD_GRAYSCALE)
         if img is not None:
             if (flatten):
                 dataset.append(toBinarySet(img))
