@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+from skimage import feature
 
 
 class DataSetCharger:
@@ -41,3 +42,19 @@ class DataSetCharger:
         final_data_set = final_data_set.astype(float) / 255.
 
         return final_data_set, labels
+
+    def image_to_lbp(self, image_path, num_points, radius, eps=1e-7):
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        return self.describe(image, num_points, radius, eps)
+
+    def describe(self, image, num_points, radius, eps):
+        lbp = feature.local_binary_pattern(image, num_points,
+                                           radius, method="uniform")
+        (hist, _) = np.histogram(lbp.ravel(),
+                                 bins=np.arange(0, num_points + 3),
+                                 range=(0, num_points + 2))
+
+        hist = hist.astype("float")
+        hist /= (hist.sum() + eps)
+
+        return hist
