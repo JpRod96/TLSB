@@ -11,6 +11,7 @@ pip install scipy
 pip install h5py
 pip install keras
 pip install sklearn
+pip install scikit-image
 pip3 install https://github.com/OlafenwaMoses/ImageAI/releases/download/2.0.2/imageai-2.0.2-py3-none-any.whl
 Rem Windows dependencies
 choco install -y protoc
