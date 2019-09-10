@@ -1,9 +1,9 @@
 from tensorflow import keras
-import os
-import cv2
+from dataSetCharger import DataSetCharger
 import numpy as np
 import tensorflow as tf
 
+charger = DataSetCharger()
 fullPathTrain = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
 fullPathTest = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/test/"
 
@@ -59,12 +59,12 @@ def main(flatten=False):
         YO: YO_VALUE
     }
 
-    train, train_labels = get_data_set(fullPathTrain, folders, switcher, flatten)
+    train, train_labels = charger.get_data_set(fullPathTrain, folders, switcher, flatten)
 
     print(train.shape)
     print(train_labels)
 
-    test, test_labels = get_data_set(fullPathTest, folders, switcher, flatten)
+    test, test_labels = charger.get_data_set(fullPathTest, folders, switcher, flatten)
 
     print(test.shape)
     print(test_labels)
@@ -210,46 +210,5 @@ def shuffle_weights(model, weights=None):
     # Faster, but less random: only permutes along the first dimension
     # weights = [np.random.permutation(w) for w in weights]
     model.set_weights(weights)
-
-
-def charge_folder_content(dataset, path, labels, value, flatten):
-    for filename in os.listdir(path):
-        img = cv2.imread(path + "/" + filename, cv2.IMREAD_GRAYSCALE)
-        if img is not None:
-            if flatten:
-                dataset.append(to_binary_set(img))
-            else:
-                dataset.append(img)
-            labels.append(value)
-
-
-def to_binary_set(img):
-    print('Transforming input to binary set...')
-    h, w = img.shape[:2]
-    binary_set = [[0 for x in range(w)] for y in range(h)]
-    for i in range(0, h):
-        for j in range(0, w):
-            r = int(img[i][j][0])
-            g = int(img[i][j][1])
-            b = int(img[i][j][2])
-            binary_value = 1 if (r > 0 or g > 0 or b > 0) else 0
-            binary_set[i][j] = binary_value
-    print('done')
-    return np.array(binary_set)
-
-
-def get_data_set(path, folders, switcher, flatten):
-    data_set = []
-    labels = []
-
-    for folder in folders:
-        value = switcher.get(folder, -1)
-        charge_folder_content(data_set, path + folder, labels, value, flatten)
-
-    final_data_set = np.array(data_set)
-    final_data_set = final_data_set.astype(float) / 255.
-
-    return final_data_set, labels
-
 
 main()
