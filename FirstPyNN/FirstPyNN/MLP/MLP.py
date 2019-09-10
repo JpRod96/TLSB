@@ -211,4 +211,5 @@ def shuffle_weights(model, weights=None):
     # weights = [np.random.permutation(w) for w in weights]
     model.set_weights(weights)
 
+
 main()
