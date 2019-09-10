@@ -1,9 +1,5 @@
 from tensorflow import keras
-from sklearn.preprocessing import LabelBinarizer
-import matplotlib.pyplot as plt
 import os
-from os import listdir
-from os.path import isfile, join
 import cv2
 import numpy as np
 import tensorflow as tf
@@ -63,12 +59,12 @@ def main(flatten=False):
         YO: YO_VALUE
     }
 
-    train, train_labels = getDataset(fullPathTrain, folders, switcher, flatten)
+    train, train_labels = get_data_set(fullPathTrain, folders, switcher, flatten)
 
     print(train.shape)
     print(train_labels)
 
-    test, test_labels = getDataset(fullPathTest, folders, switcher, flatten)
+    test, test_labels = get_data_set(fullPathTest, folders, switcher, flatten)
 
     print(test.shape)
     print(test_labels)
@@ -83,7 +79,7 @@ def main(flatten=False):
         over_all_history.append("test No: " + str(index))
         results = []
         for y in range(0, 15):
-            model_accuracy, history = trainModel(model, train, train_labels, test, test_labels, epochs, weights)
+            model_accuracy, history = train_model(model, train, train_labels, test, test_labels, epochs, weights)
             results.append((model_accuracy, history.history))
         over_all_history.append(results)
 
@@ -101,13 +97,13 @@ def format_array(history_array):
     for token in history_array:
         if isinstance(token, list):
             for history in token:
-                string += formatToken(history)
+                string += format_token(history)
         else:
             string += token + "\n"
     return string
 
 
-def formatToken(token):
+def format_token(token):
     string = ""
     accuracy, history = token
     string += "Test accuracy: " + str(accuracy) + "\n"
@@ -116,7 +112,7 @@ def formatToken(token):
 
 
 def models():
-    models = []
+    trainable_models = []
 
     model0 = keras.Sequential([
         keras.layers.Flatten(input_shape=(2500, 500)),
@@ -172,24 +168,24 @@ def models():
                    loss='sparse_categorical_crossentropy',
                    metrics=['accuracy'])
 
-    models.append((model0, 15))
-    models.append((model0, 40))
-    models.append((model1, 30))
-    models.append((model1, 60))
-    models.append((model2, 60))
-    models.append((model2, 80))
-    models.append((model3, 80))
-    models.append((model3, 160))
+    trainable_models.append((model0, 15))
+    trainable_models.append((model0, 40))
+    trainable_models.append((model1, 30))
+    trainable_models.append((model1, 60))
+    trainable_models.append((model2, 60))
+    trainable_models.append((model2, 80))
+    trainable_models.append((model3, 80))
+    trainable_models.append((model3, 160))
 
-    return models
+    return trainable_models
 
 
-def trainModel(model, trainSet, trainLabels, testSet, testLabels, epochs, weights):
+def train_model(model, train_set, train_labels, test_set, test_labels, epochs, weights):
     shuffle_weights(model, weights=weights)
     model.summary()
 
-    history = model.fit(trainSet, trainLabels, epochs=epochs)
-    test_loss, test_acc = model.evaluate(testSet, testLabels)
+    history = model.fit(train_set, train_labels, epochs=epochs)
+    test_loss, test_acc = model.evaluate(test_set, test_labels)
 
     print('Test accuracy:', test_acc)
 
@@ -216,48 +212,44 @@ def shuffle_weights(model, weights=None):
     model.set_weights(weights)
 
 
-def chargeFolderContent(dataset, path, labels, value, flatten):
+def charge_folder_content(dataset, path, labels, value, flatten):
     for filename in os.listdir(path):
         img = cv2.imread(path + "/" + filename, cv2.IMREAD_GRAYSCALE)
         if img is not None:
-            if (flatten):
-                dataset.append(toBinarySet(img))
+            if flatten:
+                dataset.append(to_binary_set(img))
             else:
                 dataset.append(img)
             labels.append(value)
 
 
-def toBinarySet(img):
+def to_binary_set(img):
     print('Transforming input to binary set...')
     h, w = img.shape[:2]
-    binarySet = [[0 for x in range(w)] for y in range(h)]
+    binary_set = [[0 for x in range(w)] for y in range(h)]
     for i in range(0, h):
         for j in range(0, w):
             r = int(img[i][j][0])
             g = int(img[i][j][1])
             b = int(img[i][j][2])
-            binaryValue = 1 if (r > 0 or g > 0 or b > 0) else 0
-            binarySet[i][j] = binaryValue
+            binary_value = 1 if (r > 0 or g > 0 or b > 0) else 0
+            binary_set[i][j] = binary_value
     print('done')
-    return np.array(binarySet)
+    return np.array(binary_set)
 
 
-def grayScale(photo_data):
-    photo_data[:] = np.max(photo_data, axis=-1, keepdims=1) / 2 + np.min(photo_data, axis=-1, keepdims=1) / 2
-
-
-def getDataset(path, folders, switcher, flatten):
-    dataset = []
+def get_data_set(path, folders, switcher, flatten):
+    data_set = []
     labels = []
 
     for folder in folders:
         value = switcher.get(folder, -1)
-        chargeFolderContent(dataset, path + folder, labels, value, flatten)
+        charge_folder_content(data_set, path + folder, labels, value, flatten)
 
-    finalDataset = np.array(dataset)
-    finalDataset = finalDataset.astype(float) / 255.
+    final_data_set = np.array(data_set)
+    final_data_set = final_data_set.astype(float) / 255.
 
-    return finalDataset, labels
+    return final_data_set, labels
 
 
 main()
