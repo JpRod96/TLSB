@@ -3,9 +3,9 @@ from dataSetCharger import DataSetCharger
 import numpy as np
 import tensorflow as tf
 
-charger = DataSetCharger()
 fullPathTrain = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
 fullPathTest = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/test/"
+charger = DataSetCharger()
 
 """
 HOLA_VALUE = 0
@@ -43,8 +43,39 @@ QUERER = "QUERER"
 YO = "YO"
 
 
-def main(flatten=False):
-    # folders = [HOLA, AUTO, CAFE, ADIOS, GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER, YO]
+def main(flag, flatten=False):
+    train, train_labels, test, test_labels, models = setup(flag, flatten)
+    test_models(models, train, train_labels, test, test_labels)
+
+
+def setup(flag, flatten):
+    if flag:
+        train, train_labels, test, test_labels = load_set(flag, flatten)
+        models = image_models()
+    else:
+        train, train_labels, test, test_labels = load_set(flag, flatten)
+        models = lbp_models()
+    return train, train_labels, test, test_labels, models
+
+
+def test_models(models, train, train_labels, test, test_labels):
+    over_all_history = []
+    for index in range(0, len(models)):
+        model, epochs = models[index]
+        weights = model.get_weights()
+        over_all_history.append(
+            "--------------------------------------------------------------------------------------------------------")
+        over_all_history.append("test No: " + str(index))
+        results = []
+        for y in range(0, 15):
+            model_accuracy, history = train_model(model, train, train_labels, test, test_labels, epochs, weights)
+            results.append((model_accuracy, history.history))
+        over_all_history.append(results)
+
+    save_test_to_txt(over_all_history)
+
+
+def load_set(flag, flatten):
     folders = [GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER]
     switcher = {
         HOLA: HOLA_VALUE,
@@ -58,32 +89,19 @@ def main(flatten=False):
         QUERER: QUERER_VALUE,
         YO: YO_VALUE
     }
-
-    train, train_labels = charger.get_data_set(fullPathTrain, folders, switcher, flatten)
+    if flag:
+        train, train_labels = charger.get_custom_image_data_set(fullPathTrain, folders, switcher, flatten)
+        test, test_labels = charger.get_custom_image_data_set(fullPathTest, folders, switcher, flatten)
+    else:
+        train, train_labels = charger.get_custom_lbp_data_set(fullPathTrain, folders, switcher)
+        test, test_labels = charger.get_custom_lbp_data_set(fullPathTest, folders, switcher)
 
     print(train.shape)
     print(train_labels)
-
-    test, test_labels = charger.get_data_set(fullPathTest, folders, switcher, flatten)
-
     print(test.shape)
     print(test_labels)
-    over_all_history = []
 
-    test_model = models()
-    for index in range(0, len(test_model)):
-        model, epochs = test_model[index]
-        weights = model.get_weights()
-        over_all_history.append(
-            "--------------------------------------------------------------------------------------------------------")
-        over_all_history.append("test No: " + str(index))
-        results = []
-        for y in range(0, 15):
-            model_accuracy, history = train_model(model, train, train_labels, test, test_labels, epochs, weights)
-            results.append((model_accuracy, history.history))
-        over_all_history.append(results)
-
-    save_test_to_txt(over_all_history)
+    return train, train_labels, test, test_labels
 
 
 def save_test_to_txt(history_array):
@@ -111,14 +129,12 @@ def format_token(token):
     return string
 
 
-def models():
+def image_models():
     trainable_models = []
 
     model0 = keras.Sequential([
         keras.layers.Flatten(input_shape=(2500, 500)),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(32, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
@@ -128,9 +144,7 @@ def models():
 
     model1 = keras.Sequential([
         keras.layers.Flatten(input_shape=(2500, 500)),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
@@ -140,11 +154,8 @@ def models():
 
     model2 = keras.Sequential([
         keras.layers.Flatten(input_shape=(2500, 500)),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(16, activation=tf.nn.relu),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
@@ -154,13 +165,9 @@ def models():
     # parece el mejor
     model3 = keras.Sequential([
         keras.layers.Flatten(input_shape=(2500, 500)),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(8, activation=tf.nn.relu),
-        keras.layers.Dropout(0.5),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
 
@@ -180,6 +187,62 @@ def models():
     return trainable_models
 
 
+def lbp_models():
+    trainable_models = []
+
+    model0 = keras.Sequential([
+        keras.layers.Dense(26, input_shape=(34,)),
+        keras.layers.Dense(8, activation=tf.nn.sigmoid),
+        keras.layers.Dense(5, activation=tf.nn.softmax)
+    ])
+
+    model0.compile(optimizer='adam',
+                   loss='sparse_categorical_crossentropy',
+                   metrics=['accuracy'])
+
+    model1 = keras.Sequential([
+        keras.layers.Dense(26, input_shape=(34,)),
+        keras.layers.Dense(16, activation=tf.nn.sigmoid),
+        keras.layers.Dense(5, activation=tf.nn.softmax)
+    ])
+
+    model1.compile(optimizer='adam',
+                   loss='sparse_categorical_crossentropy',
+                   metrics=['accuracy'])
+
+    model2 = keras.Sequential([
+        keras.layers.Flatten(input_shape=(2500, 500)),
+        keras.layers.Dense(16, activation=tf.nn.sigmoid),
+        keras.layers.Dense(16, activation=tf.nn.relu),
+        keras.layers.Dense(5, activation=tf.nn.softmax)
+    ])
+
+    model2.compile(optimizer='adam',
+                   loss='sparse_categorical_crossentropy',
+                   metrics=['accuracy'])
+    # parece el mejor
+    model3 = keras.Sequential([
+        keras.layers.Flatten(input_shape=(2500, 500)),
+        keras.layers.Dense(8, activation=tf.nn.sigmoid),
+        keras.layers.Dense(8, activation=tf.nn.sigmoid),
+        keras.layers.Dense(8, activation=tf.nn.relu),
+        keras.layers.Dense(5, activation=tf.nn.softmax)
+    ])
+
+    model3.compile(optimizer='adam',
+                   loss='sparse_categorical_crossentropy',
+                   metrics=['accuracy'])
+
+    trainable_models.append((model0, 80))
+    trainable_models.append((model0, 160))
+    trainable_models.append((model0, 380))
+    trainable_models.append((model1, 160))
+    trainable_models.append((model1, 380))
+    trainable_models.append((model1, 760))
+
+    return trainable_models
+
+
 def train_model(model, train_set, train_labels, test_set, test_labels, epochs, weights):
     shuffle_weights(model, weights=weights)
     model.summary()
@@ -193,17 +256,6 @@ def train_model(model, train_set, train_labels, test_set, test_labels, epochs, w
 
 
 def shuffle_weights(model, weights=None):
-    """Randomly permute the weights in `model`, or the given `weights`.
-
-    This is a fast approximation of re-initializing the weights of a model.
-
-    Assumes weights are distributed independently of the dimensions of the weight tensors
-      (i.e., the weights have the same distribution along each dimension).
-
-    :param Model model: Modify the weights of the given model.
-    :param list(ndarray) weights: The model's weights will be replaced by a random permutation of these weights.
-      If `None`, permute the model's current weights.
-    """
     if weights is None:
         weights = model.get_weights()
     weights = [np.random.permutation(w.flat).reshape(w.shape) for w in weights]
@@ -212,4 +264,4 @@ def shuffle_weights(model, weights=None):
     model.set_weights(weights)
 
 
-main()
+main(True)
