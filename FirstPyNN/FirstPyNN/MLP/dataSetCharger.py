@@ -5,7 +5,8 @@ from skimage import feature
 
 
 class DataSetCharger:
-    def charge_folder_content(self, data_set, path, labels, value, flatten):
+
+    def charge_folder_content_as_image_strip(self, data_set, path, labels, value, flatten):
         for filename in os.listdir(path):
             img = cv2.imread(path + "/" + filename, cv2.IMREAD_GRAYSCALE)
             if img is not None:
@@ -13,6 +14,15 @@ class DataSetCharger:
                     data_set.append(self.to_binary_set(img))
                 else:
                     data_set.append(img)
+                labels.append(value)
+
+    def charge_folder_content_as_lbp(self, data_set, path, labels, value, num_points, radius):
+        for filename in os.listdir(path):
+            img = cv2.imread(path + "/" + filename, cv2.IMREAD_GRAYSCALE)
+            if img is not None:
+                print("transforming image")
+                data_set.append(self.image_to_lbp(img, num_points, radius))
+                print("Done")
                 labels.append(value)
 
     @staticmethod
@@ -30,24 +40,37 @@ class DataSetCharger:
         print('done')
         return np.array(binary_set)
 
-    def get_data_set(self, path, folders, switcher, flatten):
+    def get_custom_image_data_set(self, path, folders, switcher, flatten):
         data_set = []
         labels = []
 
         for folder in folders:
             value = switcher.get(folder, -1)
-            self.charge_folder_content(data_set, path + folder, labels, value, flatten)
+            self.charge_folder_content_as_image_strip(data_set, path + folder, labels, value, flatten)
 
         final_data_set = np.array(data_set)
         final_data_set = final_data_set.astype(float) / 255.
 
         return final_data_set, labels
 
-    def image_to_lbp(self, image_path, num_points, radius, eps=1e-7):
-        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    def get_custom_lbp_data_set(self, path, folders, switcher):
+        data_set = []
+        labels = []
+
+        for folder in folders:
+            value = switcher.get(folder, -1)
+            self.charge_folder_content_as_lbp(data_set, path + folder, labels, value, 32, 8)
+
+        final_data_set = np.array(data_set)
+        final_data_set = final_data_set.astype(float) / 255.
+
+        return final_data_set, labels
+
+    def image_to_lbp(self, image, num_points, radius, eps=1e-7):
         return self.describe(image, num_points, radius, eps)
 
-    def describe(self, image, num_points, radius, eps):
+    @staticmethod
+    def describe(image, num_points, radius, eps):
         lbp = feature.local_binary_pattern(image, num_points,
                                            radius, method="uniform")
         (hist, _) = np.histogram(lbp.ravel(),
