@@ -32,10 +32,13 @@ class DataSetCharger:
         binary_set = [[0 for x in range(w)] for y in range(h)]
         for i in range(0, h):
             for j in range(0, w):
-                r = int(img[i][j][0])
-                g = int(img[i][j][1])
-                b = int(img[i][j][2])
-                binary_value = 1 if (r > 0 or g > 0 or b > 0) else 0
+                if len(img[i][j].shape) > 1:
+                    r = int(img[i][j][0])
+                    g = int(img[i][j][1])
+                    b = int(img[i][j][2])
+                    binary_value = 1 if (r > 0 or g > 0 or b > 0) else 0
+                else:
+                    binary_value = 1 if img[i][j] > 0 else 0
                 binary_set[i][j] = binary_value
         print('done')
         return np.array(binary_set)
@@ -56,13 +59,24 @@ class DataSetCharger:
     def get_custom_lbp_data_set(self, path, folders, switcher):
         data_set = []
         labels = []
+        radius = 3
+        n_points = 8 * radius
 
         for folder in folders:
             value = switcher.get(folder, -1)
-            self.charge_folder_content_as_lbp(data_set, path + folder, labels, value, 32, 8)
+            self.charge_folder_content_as_lbp(data_set, path + folder, labels, value, n_points, radius)
 
         final_data_set = np.array(data_set)
         final_data_set = final_data_set.astype(float) / 255.
+
+        return final_data_set, labels
+
+    @staticmethod
+    def get_lbp_set_from_file(path):
+        data_set = np.genfromtxt(path + "/values.txt")
+        labels = np.genfromtxt(path + "/labels.txt")
+
+        final_data_set = data_set.astype(float) / 255.
 
         return final_data_set, labels
 
