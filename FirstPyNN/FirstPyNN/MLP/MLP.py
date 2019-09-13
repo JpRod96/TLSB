@@ -133,7 +133,7 @@ def image_models():
     trainable_models = []
 
     model0 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(2500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(32, activation=tf.nn.sigmoid),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
@@ -143,7 +143,7 @@ def image_models():
                    metrics=['accuracy'])
 
     model1 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(2500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
         keras.layers.Dense(5, activation=tf.nn.softmax)
     ])
@@ -153,7 +153,7 @@ def image_models():
                    metrics=['accuracy'])
 
     model2 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(2500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
         keras.layers.Dense(16, activation=tf.nn.relu),
         keras.layers.Dense(5, activation=tf.nn.softmax)
@@ -164,7 +164,7 @@ def image_models():
                    metrics=['accuracy'])
     # parece el mejor
     model3 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(2500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
         keras.layers.Dense(8, activation=tf.nn.relu),
@@ -211,7 +211,7 @@ def lbp_models():
                    metrics=['accuracy'])
 
     model2 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(2500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(16, activation=tf.nn.sigmoid),
         keras.layers.Dense(16, activation=tf.nn.relu),
         keras.layers.Dense(5, activation=tf.nn.softmax)
@@ -222,7 +222,7 @@ def lbp_models():
                    metrics=['accuracy'])
     # parece el mejor
     model3 = keras.Sequential([
-        keras.layers.Flatten(input_shape=(2500, 500)),
+        keras.layers.Flatten(input_shape=(1500, 300)),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
         keras.layers.Dense(8, activation=tf.nn.sigmoid),
         keras.layers.Dense(8, activation=tf.nn.relu),
@@ -250,6 +250,8 @@ def train_model(model, train_set, train_labels, test_set, test_labels, epochs, w
     history = model.fit(train_set, train_labels, epochs=epochs)
     test_loss, test_acc = model.evaluate(test_set, test_labels)
 
+    model.save("testModel.h5")
+
     print('Test accuracy:', test_acc)
 
     return test_acc, history
@@ -262,6 +264,3 @@ def shuffle_weights(model, weights=None):
     # Faster, but less random: only permutes along the first dimension
     # weights = [np.random.permutation(w) for w in weights]
     model.set_weights(weights)
-
-
-main(True)

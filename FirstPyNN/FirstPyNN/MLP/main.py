@@ -1,9 +1,36 @@
-from dataSetCharger import DataSetCharger
+from tensorflow import keras
+import numpy as np
+import cv2
+import MLP
 
-dsc = DataSetCharger()
+GRACIAS_VALUE = 0
+CBBA_VALUE = 1
+CUAL_VALUE = 2
+POR_FAVOR_VALUE = 3
+QUERER_VALUE = 4
 
-path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/CBBA/20190812_160520EdgesAugmented1.jpg"
-print(dsc.image_to_lbp(path, 24, 8))
+GRACIAS = "GRACIAS"
+CBBA = "CBBA"
+CUAL = "CUAL"
+POR_FAVOR = "POR_FAVOR"
+QUERER = "QUERER"
 
-path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/CBBA/VID_20190811_130522EdgesAugmented5.jpg"
-print(dsc.image_to_lbp(path, 24, 8))
+
+# MLP.main(True)
+
+
+def test():
+    values = [GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER]
+    new_model = keras.models.load_model('testModel.h5')
+    new_model.summary()
+
+    img = cv2.imread("D:/desktop/DATASET/CBBA/20190908_185548Edges.jpg", cv2.IMREAD_GRAYSCALE)
+    test = [img]
+    final_data_set = np.array(test)
+    final_data_set = final_data_set.astype(float) / 255.
+    predictions = new_model.predict(final_data_set)
+
+    print(values[np.argmax(predictions[0])])
+
+
+test()
