@@ -7,8 +7,16 @@ from imageProcessor import ImageProcessor
 
 def process_image(pic_size):
     # ejemplo Image processor
-    image_processor = ImageProcessor(pic_size)
-    image_processor.blurredEdgeImagesOf("D:/desktop/DATASET/CBBA", 3, 3)
+    path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBA/train/gesto3"
+    aug = ImageDataGenerator(
+        rotation_range=3,
+        zoom_range=0.10,
+        width_shift_range=0.1,
+        height_shift_range=0.1,
+        shear_range=0.15,
+        fill_mode="nearest")
+    image_processor = ImageProcessor(pic_size, path)
+    image_processor.augment_images_from(aug, 10)
 
 
 def process_video_motion(folders, pic_size, combine_images, img_filter, frames_nro, path):
@@ -17,8 +25,8 @@ def process_video_motion(folders, pic_size, combine_images, img_filter, frames_n
         zoom_range=0.10,
         width_shift_range=0.1,
         height_shift_range=0.1,
-        shear_range=0.15,
-        fill_mode="nearest")  # procesador de aumento de datos para inyectar al procesador de video
+        shear_range=0.10,
+        fill_mode="nearest")  # procesador de aumento de datos para inyectar al procesador de video, solo se usa al generar tiras
 
     video_processor = VideoMotionProcessor(pic_size, combine_images, img_filter=img_filter,
                                            frames_nr=frames_nro,
@@ -46,10 +54,10 @@ def setup_variables_for_motion_detector():
     QUERER = "QUERER"
     YO = "YO"
 
-    folders = [GRACIAS, CUAL, POR_FAVOR, QUERER]
+    folders = [CBBA]
     frames_nro = 5
     pic_size = 500
-    combine_images = True
+    combine_images = False
     """
     tipos de filtros para img_filter
     'None' - ningun filtro, devuelve las imagenes detectadas en rgb y el tamaño de imagen pedido
@@ -104,3 +112,6 @@ def process_video_cutter():
         vid.processPath("D:/VideosDataset/LUZ" + str(i))
         i += 1
     print("Word Luz complete")
+
+
+process_image(500)
