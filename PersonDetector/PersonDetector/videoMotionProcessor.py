@@ -110,9 +110,11 @@ class VideoMotionProcessor(VideoProcessorI):
 
     def save_critical_frames(self, frames, indexes):
         counter = 1
+        new_path = self.directory + "/" + self.videoName
+        os.mkdir(new_path)
         for index in indexes:
             print("Processing frame number " + str(counter) + "...")
-            file_name = self.directory + "/" + self.videoName + str(counter)
+            file_name = new_path + "/" + self.videoName + str(counter)
             counter += 1
             frame = frames[index]
             if self.rotateImages:

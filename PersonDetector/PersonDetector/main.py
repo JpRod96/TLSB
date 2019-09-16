@@ -62,8 +62,8 @@ def setup_variables_for_motion_detector():
     """
     tipos de filtros para img_filter
     'None' - ningun filtro, devuelve las imagenes detectadas en rgb y el tamaño de imagen pedido
-    'Edges kH kW' - usa detection de bordes por blur guasiano, kH y kW son los tamaños que tendra el kernel del blur 
-                  ejemplo: 'Edges 2 4', usara un kernel 2x4, sino se proporcionan los tamaños, se usara un kernel de 5x5
+    'Edges kH kW' - usa detection de bordes por blur guasiano, kH y kW (estos valores tiene que ser impares) son los tamaños que tendra el kernel del blur 
+                  ejemplo: 'Edges 3 5', usara un kernel 3x5, sino se proporcionan los tamaños, se usara un kernel de 5x5
                   ejemplo: 'Edges', usara un kernel de 5x5 
                   Al final se devuelve un imagen en escala de grises con los bordes detectados
     'Grayscale' - usa el filtro de escala de grises y devuelve una imagen con el tamaño pedido
@@ -115,4 +115,4 @@ def process_video_cutter():
     print("Word Luz complete")
 
 
-process_image(300)
+setup_variables_for_motion_detector()

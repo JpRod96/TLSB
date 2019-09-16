@@ -92,7 +92,7 @@ class ImageProcessor:
             width = self.pictureSize
         if height is 0:
             height = self.pictureSize
-        images = self.get_files_from_path()
+        images = self.load_images_from_path()
         os.mkdir(self.path + "/rescaled")
         cont = 0
         for image in images:
@@ -100,7 +100,7 @@ class ImageProcessor:
             cv2.imwrite(self.path + "/rescaled/" + str(cont) + ".jpg", resized_img)
             cont += 1
 
-    def get_files_from_path(self):
+    def load_images_from_path(self):
         files = []
         if self.is_given_path_a_dir():
             image_files = self.get_image_files_from_directory()
