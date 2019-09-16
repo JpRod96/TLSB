@@ -4,6 +4,29 @@ import cv2
 from MLP import MLPTester
 
 
+def mlp_single_images():
+    full_path_train = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBA/train/"
+    full_path_test = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBA/test/"
+
+    GESTO1_VALUE = 0
+    GESTO2_VALUE = 1
+    GESTO3_VALUE = 2
+
+    GESTO1 = "gesto1"
+    GESTO2 = "gesto2"
+    GESTO3 = "gesto3"
+
+    folders = [GESTO1, GESTO2, GESTO3]
+    switcher = {
+        GESTO1: GESTO1_VALUE,
+        GESTO2: GESTO2_VALUE,
+        GESTO3: GESTO3_VALUE
+    }
+
+    mlp = MLPTester(MLPTester.SINGLE_IMAGE, folders, switcher, full_path_train, full_path_test)
+    mlp.start()
+
+
 def mlp():
     full_path_train = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
     full_path_test = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/test/"
@@ -87,4 +110,4 @@ def test():
         print(prediction)
 
 
-mlp()
+mlp_single_images()

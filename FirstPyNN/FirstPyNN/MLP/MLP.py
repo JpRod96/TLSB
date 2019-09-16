@@ -5,6 +5,9 @@ import tensorflow as tf
 
 
 class MLPTester:
+    IMAGE_STRIP = "strip"
+    SINGLE_IMAGE = "single"
+    LBP = "lbp"
 
     def __init__(self, use_image_set, folders, switcher, path_train, path_test, flatten=False):
         self.flag = use_image_set
@@ -21,12 +24,14 @@ class MLPTester:
         self.test_models(models, train, train_labels, test, test_labels)
 
     def setup(self):
-        if self.flag:
+        if self.flag == self.IMAGE_STRIP:
             models = self.image_models()
-        else:
+        elif self.flag == self.LBP:
             models = self.lbp_models()
-        train, train_labels, test, test_labels = self.load_set()
+        else:
+            models = self.single_image_models()
 
+        train, train_labels, test, test_labels = self.load_set()
         return train, train_labels, test, test_labels, models
 
     def test_models(self, models, train, train_labels, test, test_labels):
@@ -47,7 +52,7 @@ class MLPTester:
         self.save_test_to_txt(over_all_history)
 
     def load_set(self):
-        if self.flag:
+        if self.flag == self.IMAGE_STRIP or self.flag == self.SINGLE_IMAGE:
             train, train_labels = self.charger.get_custom_image_data_set(self.path_train, self.folders, self.switcher,
                                                                          self.flatten)
             test, test_labels = self.charger.get_custom_image_data_set(self.path_test, self.folders, self.switcher,
@@ -200,6 +205,49 @@ class MLPTester:
 
         return trainable_models
 
+    @staticmethod
+    def single_image_models():
+        trainable_models = []
+
+        model0 = keras.Sequential([
+            keras.layers.Flatten(input_shape=(300, 300)),
+            keras.layers.Dense(8, activation=tf.nn.sigmoid),
+            keras.layers.Dense(5, activation=tf.nn.softmax)
+        ])
+
+        model0.compile(optimizer='adam',
+                       loss='sparse_categorical_crossentropy',
+                       metrics=['accuracy'])
+
+        model1 = keras.Sequential([
+            keras.layers.Flatten(input_shape=(300, 300)),
+            keras.layers.Dense(16, activation=tf.nn.sigmoid),
+            keras.layers.Dense(5, activation=tf.nn.softmax)
+        ])
+
+        model1.compile(optimizer='adam',
+                       loss='sparse_categorical_crossentropy',
+                       metrics=['accuracy'])
+
+        model2 = keras.Sequential([
+            keras.layers.Flatten(input_shape=(300, 300)),
+            keras.layers.Dense(32, activation=tf.nn.sigmoid),
+            keras.layers.Dense(5, activation=tf.nn.softmax)
+        ])
+
+        model2.compile(optimizer='adam',
+                       loss='sparse_categorical_crossentropy',
+                       metrics=['accuracy'])
+
+        trainable_models.append((model0, 40))
+        trainable_models.append((model0, 80))
+        trainable_models.append((model1, 40))
+        trainable_models.append((model1, 80))
+        trainable_models.append((model2, 40))
+        trainable_models.append((model2, 80))
+
+        return trainable_models
+
     def train_model(self, model, train_set, train_labels, test_set, test_labels, epochs, weights):
         self.shuffle_weights(model, weights=weights)
         model.summary()
@@ -213,9 +261,8 @@ class MLPTester:
         return test_acc, history
 
     def save_if_the_best(self, accuracy, model):
+        accuracy = int(accuracy * 100)
         if accuracy > self.best_score:
-            accuracy = int(accuracy*100)
-
             model.save("bestModel" + str(accuracy) + ".h5")
             self.best_score = accuracy
 
