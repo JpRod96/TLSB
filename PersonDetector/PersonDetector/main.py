@@ -7,7 +7,7 @@ from imageProcessor import ImageProcessor
 
 def process_image(pic_size):
     # ejemplo Image processor
-    path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBA/train/gesto3"
+    path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBA/test/gesto1"
     aug = ImageDataGenerator(
         rotation_range=3,
         zoom_range=0.10,
@@ -16,7 +16,8 @@ def process_image(pic_size):
         shear_range=0.15,
         fill_mode="nearest")
     image_processor = ImageProcessor(pic_size, path)
-    image_processor.augment_images_from(aug, 10)
+    #image_processor.augment_images_from(aug, 10)
+    image_processor.rescale_images_from()
 
 
 def process_video_motion(folders, pic_size, combine_images, img_filter, frames_nro, path):
@@ -114,4 +115,4 @@ def process_video_cutter():
     print("Word Luz complete")
 
 
-process_image(500)
+process_image(300)

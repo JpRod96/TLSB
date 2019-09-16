@@ -1,4 +1,5 @@
 import cv2
+import os
 from os import listdir
 from os.path import isfile, join
 from edgeDetector import EdgeDetector
@@ -55,7 +56,7 @@ class ImageProcessor:
             image = np.expand_dims(image, axis=3)
         augmented_image_iterator = aug.flow(image, batch_size=1)
         for augmented_image in augmented_image_iterator:
-            if cont>0:
+            if cont > 0:
                 image = np.squeeze(augmented_image, axis=0)
                 cv2.imwrite(self.combine_name(name, "augmented" + str(cont)), image)
             else:
@@ -86,17 +87,32 @@ class ImageProcessor:
             img = self.edgeDetector.getImageEdgesFromNumpy(img, kernelHeight=k_h, kernelWidth=kw)
             cv2.imwrite(self.combine_name(self.path, "edges"), img)
 
-    def rescale_images_from(self, width, height):
+    def rescale_images_from(self, width=0, height=0):
+        if width is 0:
+            width = self.pictureSize
+        if height is 0:
+            height = self.pictureSize
+        images = self.get_files_from_path()
+        os.mkdir(self.path + "/rescaled")
+        cont = 0
+        for image in images:
+            resized_img = cv2.resize(image, (width, height))
+            cv2.imwrite(self.path + "/rescaled/" + str(cont) + ".jpg", resized_img)
+            cont += 1
+
+    def get_files_from_path(self):
+        files = []
         if self.is_given_path_a_dir():
             image_files = self.get_image_files_from_directory()
             for imageFile in image_files:
                 img = cv2.imread(self.path + "/" + imageFile, -1)
-                resized_img = cv2.resize(img, (width, height))
-                cv2.imwrite(self.combine_name(self.path + "/" + imageFile, "rescaled"), resized_img)
+                if img is not None:
+                    files.append(img)
         else:
             img = cv2.imread(self.path, -1)
-            resized_img = cv2.resize(img, (width, height))
-            cv2.imwrite(self.combine_name(self.path, "rescaled"), resized_img)
+            if img is not None:
+                files.append(img)
+        return files
 
     @staticmethod
     def combine_name(path, to_combine):
