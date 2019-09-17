@@ -210,7 +210,7 @@ class MLPTester:
         trainable_models = []
 
         model0 = keras.Sequential([
-            keras.layers.Flatten(input_shape=(300, 300)),
+            keras.layers.Flatten(input_shape=(500, 500)),
             keras.layers.Dense(8, activation=tf.nn.sigmoid),
             keras.layers.Dense(5, activation=tf.nn.softmax)
         ])
@@ -220,7 +220,7 @@ class MLPTester:
                        metrics=['accuracy'])
 
         model1 = keras.Sequential([
-            keras.layers.Flatten(input_shape=(300, 300)),
+            keras.layers.Flatten(input_shape=(500, 500)),
             keras.layers.Dense(16, activation=tf.nn.sigmoid),
             keras.layers.Dense(5, activation=tf.nn.softmax)
         ])
@@ -230,7 +230,7 @@ class MLPTester:
                        metrics=['accuracy'])
 
         model2 = keras.Sequential([
-            keras.layers.Flatten(input_shape=(300, 300)),
+            keras.layers.Flatten(input_shape=(500, 500)),
             keras.layers.Dense(32, activation=tf.nn.sigmoid),
             keras.layers.Dense(5, activation=tf.nn.softmax)
         ])
@@ -239,12 +239,13 @@ class MLPTester:
                        loss='sparse_categorical_crossentropy',
                        metrics=['accuracy'])
 
-        trainable_models.append((model0, 40))
-        trainable_models.append((model0, 80))
-        trainable_models.append((model1, 40))
-        trainable_models.append((model1, 80))
+        #trainable_models.append((model0, 40))
+        #trainable_models.append((model0, 80))
+        #trainable_models.append((model1, 40))
+        #trainable_models.append((model1, 80))
         trainable_models.append((model2, 40))
         trainable_models.append((model2, 80))
+        trainable_models.append((model2, 100))
 
         return trainable_models
 
