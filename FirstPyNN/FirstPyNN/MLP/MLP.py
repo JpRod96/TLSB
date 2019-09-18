@@ -42,8 +42,9 @@ class MLPTester:
             over_all_history.append(
                 "--------------------------------------------------------------------------------------------------------")
             over_all_history.append("test No: " + str(index))
+            over_all_history.append(model.summary)
             results = []
-            for y in range(0, 15):
+            for y in range(0, 2):
                 model_accuracy, history = self.train_model(model, train, train_labels, test, test_labels, epochs,
                                                            weights)
                 results.append((model_accuracy, history.history))
@@ -94,7 +95,21 @@ class MLPTester:
     @staticmethod
     def image_models():
         trainable_models = []
+        activation_functions = [tf.nn.sigmoid, tf.nn.relu]
 
+        for neurons in range(15, 40, 3):
+            for activation_function in activation_functions:
+                for iteration in [15, 20, 50, 80]:
+                    model = keras.Sequential([
+                        keras.layers.Flatten(input_shape=(1500, 300)),
+                        keras.layers.Dense(neurons, activation=activation_function),
+                        keras.layers.Dense(5, activation=tf.nn.softmax)
+                    ])
+                    model.compile(optimizer='adam',
+                                  loss='sparse_categorical_crossentropy',
+                                  metrics=['accuracy'])
+                    trainable_models.append((model, iteration))
+        """
         model0 = keras.Sequential([
             keras.layers.Flatten(input_shape=(1500, 300)),
             keras.layers.Dense(32, activation=tf.nn.sigmoid),
@@ -146,6 +161,7 @@ class MLPTester:
         trainable_models.append((model2, 80))
         trainable_models.append((model3, 80))
         trainable_models.append((model3, 160))
+        """
 
         return trainable_models
 
@@ -239,10 +255,10 @@ class MLPTester:
                        loss='sparse_categorical_crossentropy',
                        metrics=['accuracy'])
 
-        #trainable_models.append((model0, 40))
-        #trainable_models.append((model0, 80))
-        #trainable_models.append((model1, 40))
-        #trainable_models.append((model1, 80))
+        # trainable_models.append((model0, 40))
+        # trainable_models.append((model0, 80))
+        # trainable_models.append((model1, 40))
+        # trainable_models.append((model1, 80))
         trainable_models.append((model2, 40))
         trainable_models.append((model2, 80))
         trainable_models.append((model2, 100))
