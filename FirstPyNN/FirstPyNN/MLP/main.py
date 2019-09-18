@@ -28,8 +28,8 @@ def mlp_single_images():
 
 
 def mlp():
-    full_path_train = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/train/"
-    full_path_test = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASET/test/"
+    full_path_train = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETAugmented/train/"
+    full_path_test = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETAugmented/test/"
 
     """
     HOLA_VALUE = 0
@@ -79,7 +79,7 @@ def mlp():
         YO: YO_VALUE
     }
 
-    mlp = MLPTester(True, folders, switcher, full_path_train, full_path_test)
+    mlp = MLPTester(MLPTester.IMAGE_STRIP, folders, switcher, full_path_train, full_path_test)
     mlp.start()
 
 
@@ -110,4 +110,4 @@ def test():
         print(prediction)
 
 
-mlp_single_images()
+mlp()
