@@ -3,11 +3,13 @@ from keras.preprocessing.image import ImageDataGenerator
 from videoCutterProcessor import VideoCutterProcessor
 from videoMotionProcessor import VideoMotionProcessor
 from imageProcessor import ImageProcessor
+import cv2
+from edgeDetector import EdgeDetector
 
 
 def process_image(pic_size):
     # ejemplo Image processor
-    path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBA/test/gesto1"
+    path = "C:/Users/Jp/Desktop/Gestos/CAFE/20190805_161744"
     aug = ImageDataGenerator(
         rotation_range=3,
         zoom_range=0.10,
@@ -16,8 +18,8 @@ def process_image(pic_size):
         shear_range=0.15,
         fill_mode="nearest")
     image_processor = ImageProcessor(pic_size, path)
-    #image_processor.augment_images_from(aug, 10)
-    image_processor.rescale_images_from()
+    # image_processor.augment_images_from(aug, 10)
+    image_processor.get_strip_from(image_filter=2, strip_length=5, aug=(aug, 4))
 
 
 def process_video_motion(folders, pic_size, combine_images, img_filter, frames_nro, path):
@@ -84,7 +86,8 @@ def process_video_cutter():
     rotate = True
     type_of_cut = "Constant"  # o 'Probabilistic'
 
-    video_processor = VideoCutterProcessor(frames_nro, pic_size, rotate, type_of_cut)  # procesador de corte sin heuristica
+    video_processor = VideoCutterProcessor(frames_nro, pic_size, rotate,
+                                           type_of_cut)  # procesador de corte sin heuristica
     vid = VideoProcessManager(video_processor)
     i = 1
     print("Generating edges of images for word Bano")
@@ -115,4 +118,19 @@ def process_video_cutter():
     print("Word Luz complete")
 
 
-setup_variables_for_motion_detector()
+def on_the_fly_calibration():
+    img = cv2.imread("C:/Users/Jp/Desktop/Gestos/ADIOS/VID_20190728_145655/VID_20190728_1456554.jpg")
+    while True:
+        proc = EdgeDetector(800)
+        kh = int(input("new kernel height: "))
+        kw = int(input("new kernel width: "))
+        new_img = proc.getImageBluryEdgesFromNumpy(img, kernelHeight=kh, kernelWidth=kw)
+        cv2.imshow("Calibration", new_img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        answer = input("Are you done with the values? (y/n): ")
+        if answer is 'y':
+            break
+
+
+process_image(500)

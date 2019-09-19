@@ -10,6 +10,10 @@ import util
 class ImageProcessor:
     pictureSize = None
     JPG_EXTENSION = "jpg"
+    NONE = 0
+    GRAY = 1
+    EDGES = 2
+    BLURRY_EDGES = 3
 
     def __init__(self, picture_size, path):
         self.pictureSize = picture_size
@@ -99,6 +103,109 @@ class ImageProcessor:
             resized_img = cv2.resize(image, (width, height))
             cv2.imwrite(self.path + "/rescaled/" + str(cont) + ".jpg", resized_img)
             cont += 1
+
+    def get_strip_from(self, strip_length=0, aug=(None, 0), image_filter=0):
+        images = self.load_images_from_path()
+        aug_processor, augmented_size = aug
+
+        os.mkdir(self.path + "/strips")
+        kh, kw = self.on_the_fly_calibration(images[0], image_filter)
+        strip = self.satisfy_frames_number(self.apply_filter(images, image_filter, kh=kh, kw=kw), strip_length)
+        if aug_processor is None:
+            file_name = self.path + "/strips/originalStrip." + self.JPG_EXTENSION
+            self.save_strip(strip, file_name)
+        else:
+            base_file_name = self.path + "/strips/"
+            self.augment_image_strip(strip, aug_processor, augmented_size, base_file_name)
+
+    def augment_image_strip(self, images_strip, augment_processor, augmented_size, base_file_name):
+        if len(images_strip) > 0:
+            print("Augmenting image strip...")
+
+            for x in range(0, augmented_size):
+                augmented_strip = []
+
+                for image in images_strip:
+                    if len(image.shape) == 3:
+                        image = np.expand_dims(image, axis=0)
+                    else:
+                        image = np.expand_dims(image, axis=0)
+                        image = np.expand_dims(image, axis=3)
+
+                    augmented_image_iterator = augment_processor.flow(image, batch_size=1)
+
+                    for augmented_image in augmented_image_iterator:
+                        image = np.squeeze(augmented_image, axis=0)
+                        break
+                    augmented_strip.append(image)
+
+                print("Augmented strip number " + str(x + 1) + " generated")
+                file_name = base_file_name + "Augmented" + str(x + 1) + "." + self.JPG_EXTENSION
+                self.save_strip(augmented_strip, file_name)
+            print("Saving original strip")
+            file_name = base_file_name + "Original." + self.JPG_EXTENSION
+            self.save_strip(images_strip, file_name)
+        else:
+            print("Not a valid image strip \n")
+
+    @staticmethod
+    def save_strip(strip, file_name):
+        strip = util.combineImages(strip)
+        cv2.imwrite(file_name, strip)
+
+    def satisfy_frames_number(self, frames_array, required_length):
+        if required_length > 0:
+            if required_length > len(frames_array):
+                self.increase_array_length(frames_array, required_length)
+            elif required_length < len(frames_array):
+                self.decrease_array_length(frames_array, required_length)
+        return frames_array
+
+    @staticmethod
+    def increase_array_length(array, frames_number):
+        difference = frames_number - len(array)
+        last_index = len(array) - 1
+        last_frame = array[last_index]
+        for x in range(0, difference):
+            array.append(last_frame)
+
+    @staticmethod
+    def decrease_array_length(array, frames_number):
+        difference = len(array) - frames_number
+        for x in range(0, difference):
+            array.pop()
+
+    def on_the_fly_calibration(self, sample_img, filter_index):
+        if filter_index is self.BLURRY_EDGES or filter_index is self.EDGES:
+            while True:
+                kh = int(input("new kernel height: "))
+                kw = int(input("new kernel width: "))
+                if filter_index is self.EDGES:
+                    new_img = self.edgeDetector.getImageEdgesFromNumpy(sample_img, kernelHeight=kh, kernelWidth=kw)
+                else:
+                    new_img = self.edgeDetector.getImageBluryEdgesFromNumpy(sample_img, kernelHeight=kh, kernelWidth=kw)
+                cv2.imshow("Calibration", new_img)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+                answer = input("Are you done with the values? (y/n): ")
+                if answer is 'y':
+                    break
+            return kh, kw
+        else:
+            return 5, 5
+
+    def apply_filter(self, images, filter_index, kh=5, kw=5):
+        strip = []
+        for image in images:
+            if filter_index is self.NONE:
+                strip.append(self.edgeDetector.make_square(image))
+            elif filter_index is self.GRAY:
+                strip.append(self.edgeDetector.toGrayscale(image))
+            elif filter_index is self.BLURRY_EDGES:
+                strip.append(self.edgeDetector.getImageBluryEdgesFromNumpy(image, kernelHeight=kh, kernelWidth=kw))
+            else:
+                strip.append(self.edgeDetector.getImageEdgesFromNumpy(image, kernelHeight=kh, kernelWidth=kw))
+        return strip
 
     def load_images_from_path(self):
         files = []

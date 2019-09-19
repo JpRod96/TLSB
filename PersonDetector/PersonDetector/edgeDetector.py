@@ -17,7 +17,7 @@ class EdgeDetector:
     
     def toGrayscale(self, image):
         gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        squarePic = self.make_square(fris)
+        squarePic = self.make_square(gris)
         resizedImg = cv2.resize(squarePic, (self.pictureSize, self.pictureSize))
         return resizedImg
 
