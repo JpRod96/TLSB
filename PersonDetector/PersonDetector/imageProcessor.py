@@ -4,6 +4,7 @@ from os import listdir
 from os.path import isfile, join
 from edgeDetector import EdgeDetector
 import numpy as np
+from scipy import ndimage
 import util
 
 
@@ -39,6 +40,15 @@ class ImageProcessor:
             img = cv2.imread(self.path, -1)
             img = self.edgeDetector.toGrayscale(img)
             cv2.imwrite(self.combine_name(self.path, "grey"), img)
+
+    def rotate_from(self, degrees):
+        images = self.load_images_from_path()
+        os.mkdir(self.path + "/rotate")
+        cont = 0
+        for image in images:
+            rotated = ndimage.rotate(image, degrees)
+            cv2.imwrite(self.path + "/rotate/" + str(cont) + ".jpg", rotated)
+            cont += 1
 
     def augment_images_from(self, aug, batch_size):
         if self.is_given_path_a_dir():

@@ -8,6 +8,7 @@ class MLPTester:
     IMAGE_STRIP = "strip"
     SINGLE_IMAGE = "single"
     LBP = "lbp"
+    IN_TEST = "in_test"
 
     def __init__(self, use_image_set, folders, switcher, path_train, path_test, flatten=False):
         self.flag = use_image_set
@@ -24,9 +25,9 @@ class MLPTester:
         self.test_models(models, train, train_labels, test, test_labels)
 
     def setup(self):
-        if self.flag == self.IMAGE_STRIP:
+        if self.flag is self.IMAGE_STRIP:
             models = self.image_models()
-        elif self.flag == self.LBP:
+        elif self.flag is self.LBP:
             models = self.lbp_models()
         else:
             models = self.single_image_models()
@@ -42,9 +43,12 @@ class MLPTester:
             over_all_history.append(
                 "--------------------------------------------------------------------------------------------------------")
             over_all_history.append("test No: " + str(index))
-            over_all_history.append(model.summary)
+            string_list = []
+            model.summary(print_fn=lambda x: string_list.append(x))
+            short_model_summary = "\n".join(string_list)
+            over_all_history.append(short_model_summary)
             results = []
-            for y in range(0, 2):
+            for y in range(0, 10):
                 model_accuracy, history = self.train_model(model, train, train_labels, test, test_labels, epochs,
                                                            weights)
                 results.append((model_accuracy, history.history))
@@ -92,27 +96,54 @@ class MLPTester:
         string += str(history) + "\n\n"
         return string
 
+    def in_test_model(self):
+        train, train_labels, test, test_labels = self.load_set()
+        over_all_history = []
+        activation_functions = [tf.nn.sigmoid, tf.nn.relu]
+        cont = 1
+        for neurons_outer in range(16, 20):
+            for neurons_inner in range(16, 20):
+                for activation_function in activation_functions:
+                    for iteration in [15, 20, 50, 80]:
+                        model = keras.Sequential([
+                            keras.layers.Flatten(input_shape=(1500, 300)),
+                            keras.layers.Dense(neurons_outer, activation=activation_function),
+                            keras.layers.Dense(neurons_inner, activation=activation_function),
+                            keras.layers.Dense(5, activation=tf.nn.softmax)
+                        ])
+                        model.compile(optimizer='adam',
+                                      loss='sparse_categorical_crossentropy',
+                                      metrics=['accuracy'])
+                        weights = model.get_weights()
+                        over_all_history.append(
+                            "--------------------------------------------------------------------------------------------------------")
+                        over_all_history.append("test No: " + str(cont))
+                        string_list = []
+                        model.summary(print_fn=lambda x: string_list.append(x))
+                        short_model_summary = "\n".join(string_list)
+                        over_all_history.append(short_model_summary)
+                        if activation_function is tf.nn.relu:
+                            over_all_history.append("Rectilineo \n")
+                            print("rectilineo")
+                        else:
+                            over_all_history.append("Sigmoidal \n")
+                            print("sigmoidal")
+                        results = []
+                        model_accuracy, history = self.train_model(model, train, train_labels, test, test_labels,
+                                                                   iteration,
+                                                                   weights)
+                        results.append((model_accuracy, history.history))
+                        over_all_history.append(results)
+                        cont += 1
+        self.save_test_to_txt(over_all_history)
+
     @staticmethod
     def image_models():
         trainable_models = []
-        activation_functions = [tf.nn.sigmoid, tf.nn.relu]
-
-        for neurons in range(15, 40, 3):
-            for activation_function in activation_functions:
-                for iteration in [15, 20, 50, 80]:
-                    model = keras.Sequential([
-                        keras.layers.Flatten(input_shape=(1500, 300)),
-                        keras.layers.Dense(neurons, activation=activation_function),
-                        keras.layers.Dense(5, activation=tf.nn.softmax)
-                    ])
-                    model.compile(optimizer='adam',
-                                  loss='sparse_categorical_crossentropy',
-                                  metrics=['accuracy'])
-                    trainable_models.append((model, iteration))
-        """
         model0 = keras.Sequential([
             keras.layers.Flatten(input_shape=(1500, 300)),
-            keras.layers.Dense(32, activation=tf.nn.sigmoid),
+            keras.layers.Dense(17, activation=tf.nn.sigmoid),
+            keras.layers.Dense(17, activation=tf.nn.sigmoid),
             keras.layers.Dense(5, activation=tf.nn.softmax)
         ])
 
@@ -122,7 +153,8 @@ class MLPTester:
 
         model1 = keras.Sequential([
             keras.layers.Flatten(input_shape=(1500, 300)),
-            keras.layers.Dense(16, activation=tf.nn.sigmoid),
+            keras.layers.Dense(17, activation=tf.nn.sigmoid),
+            keras.layers.Dense(17, activation=tf.nn.sigmoid),
             keras.layers.Dense(5, activation=tf.nn.softmax)
         ])
 
@@ -132,20 +164,19 @@ class MLPTester:
 
         model2 = keras.Sequential([
             keras.layers.Flatten(input_shape=(1500, 300)),
-            keras.layers.Dense(16, activation=tf.nn.sigmoid),
-            keras.layers.Dense(16, activation=tf.nn.relu),
+            keras.layers.Dense(17, activation=tf.nn.sigmoid),
+            keras.layers.Dense(17, activation=tf.nn.sigmoid),
             keras.layers.Dense(5, activation=tf.nn.softmax)
         ])
 
         model2.compile(optimizer='adam',
                        loss='sparse_categorical_crossentropy',
                        metrics=['accuracy'])
-        # parece el mejor
+
         model3 = keras.Sequential([
             keras.layers.Flatten(input_shape=(1500, 300)),
-            keras.layers.Dense(8, activation=tf.nn.sigmoid),
-            keras.layers.Dense(8, activation=tf.nn.sigmoid),
-            keras.layers.Dense(8, activation=tf.nn.relu),
+            keras.layers.Dense(17, activation=tf.nn.sigmoid),
+            keras.layers.Dense(17, activation=tf.nn.sigmoid),
             keras.layers.Dense(5, activation=tf.nn.softmax)
         ])
 
@@ -153,15 +184,10 @@ class MLPTester:
                        loss='sparse_categorical_crossentropy',
                        metrics=['accuracy'])
 
-        trainable_models.append((model0, 15))
-        trainable_models.append((model0, 40))
-        trainable_models.append((model1, 30))
-        trainable_models.append((model1, 60))
-        trainable_models.append((model2, 60))
+        trainable_models.append((model0, 80))
+        trainable_models.append((model1, 80))
         trainable_models.append((model2, 80))
         trainable_models.append((model3, 80))
-        trainable_models.append((model3, 160))
-        """
 
         return trainable_models
 

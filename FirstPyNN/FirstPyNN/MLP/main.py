@@ -81,6 +81,7 @@ def mlp():
 
     mlp = MLPTester(MLPTester.IMAGE_STRIP, folders, switcher, full_path_train, full_path_test)
     mlp.start()
+    #mlp.in_test_model()
 
 
 def test():
