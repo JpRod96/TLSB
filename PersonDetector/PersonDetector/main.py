@@ -5,6 +5,7 @@ from videoMotionProcessor import VideoMotionProcessor
 from imageProcessor import ImageProcessor
 import cv2
 from edgeDetector import EdgeDetector
+from HaarCascadeProcessor import HaarCascadeProcessor
 
 
 def process_image(pic_size):
@@ -133,4 +134,5 @@ def on_the_fly_calibration():
             break
 
 
-process_image(500)
+#process_image(500)
+HaarCascadeProcessor.process("C:/Users/Jp/Downloads/jato.jpeg")
