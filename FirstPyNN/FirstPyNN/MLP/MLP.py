@@ -137,6 +137,47 @@ class MLPTester:
                         cont += 1
         self.save_test_to_txt(over_all_history)
 
+    def in_test_model_single(self):
+        train, train_labels, test, test_labels = self.load_set()
+        over_all_history = []
+        activation_functions = [tf.nn.sigmoid, tf.nn.relu]
+        cont = 1
+        for neurons_outer in range(5, 25):
+            for activation_function in activation_functions:
+                for iteration in [10, 15, 20, 30, 50, 80]:
+                    model = keras.Sequential([
+                        keras.layers.Flatten(input_shape=(300, 300)),
+                        keras.layers.Dense(neurons_outer, activation=activation_function),
+                        keras.layers.Dense(5, activation=tf.nn.softmax)
+                    ])
+                    model.compile(optimizer='adam',
+                                  loss='sparse_categorical_crossentropy',
+                                  metrics=['accuracy'])
+                    weights = model.get_weights()
+                    over_all_history.append(
+                        "--------------------------------------------------------------------------------------------------------")
+                    over_all_history.append("test No: " + str(cont))
+                    over_all_history.append("iteraciones: " + str(iteration))
+                    string_list = []
+                    model.summary(print_fn=lambda x: string_list.append(x))
+                    short_model_summary = "\n".join(string_list)
+                    over_all_history.append(short_model_summary)
+                    if activation_function is tf.nn.relu:
+                        over_all_history.append("Rectilineo \n")
+                        print("rectilineo")
+                    else:
+                        over_all_history.append("Sigmoidal \n")
+                        print("sigmoidal")
+                    results = []
+                    for index in range(0, 10):
+                        model_accuracy, history = self.train_model(model, train, train_labels, test, test_labels,
+                                                                   iteration,
+                                                                   weights)
+                        results.append((model_accuracy, history.history))
+                    over_all_history.append(results)
+                    cont += 1
+        self.save_test_to_txt(over_all_history)
+
     @staticmethod
     def image_models():
         trainable_models = []
@@ -252,9 +293,9 @@ class MLPTester:
         trainable_models = []
 
         model0 = keras.Sequential([
-            keras.layers.Flatten(input_shape=(500, 500)),
+            keras.layers.Flatten(input_shape=(300, 300)),
             keras.layers.Dense(8, activation=tf.nn.sigmoid),
-            keras.layers.Dense(5, activation=tf.nn.softmax)
+            keras.layers.Dense(3, activation=tf.nn.softmax)
         ])
 
         model0.compile(optimizer='adam',
@@ -262,9 +303,9 @@ class MLPTester:
                        metrics=['accuracy'])
 
         model1 = keras.Sequential([
-            keras.layers.Flatten(input_shape=(500, 500)),
+            keras.layers.Flatten(input_shape=(300, 300)),
             keras.layers.Dense(16, activation=tf.nn.sigmoid),
-            keras.layers.Dense(5, activation=tf.nn.softmax)
+            keras.layers.Dense(3, activation=tf.nn.softmax)
         ])
 
         model1.compile(optimizer='adam',
@@ -272,19 +313,21 @@ class MLPTester:
                        metrics=['accuracy'])
 
         model2 = keras.Sequential([
-            keras.layers.Flatten(input_shape=(500, 500)),
+            keras.layers.Flatten(input_shape=(300, 300)),
             keras.layers.Dense(32, activation=tf.nn.sigmoid),
-            keras.layers.Dense(5, activation=tf.nn.softmax)
+            keras.layers.Dense(3, activation=tf.nn.softmax)
         ])
 
         model2.compile(optimizer='adam',
                        loss='sparse_categorical_crossentropy',
                        metrics=['accuracy'])
 
-        # trainable_models.append((model0, 40))
-        # trainable_models.append((model0, 80))
-        # trainable_models.append((model1, 40))
-        # trainable_models.append((model1, 80))
+        trainable_models.append((model0, 20))
+        trainable_models.append((model0, 40))
+        trainable_models.append((model0, 80))
+        trainable_models.append((model1, 20))
+        trainable_models.append((model1, 40))
+        trainable_models.append((model1, 80))
         trainable_models.append((model2, 40))
         trainable_models.append((model2, 80))
         trainable_models.append((model2, 100))

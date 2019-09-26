@@ -78,28 +78,20 @@ class ImageProcessor:
             cont -= 1
 
     def blurred_edge_images_from(self, k_h, k_w):
-        if self.is_given_path_a_dir():
-            image_files = self.get_image_files_from_directory()
-            for imageFile in image_files:
-                img = cv2.imread(self.path + "/" + imageFile, -1)
-                img = self.edgeDetector.getImageBluryEdgesFromNumpy(img, kernelHeight=k_h, kernelWidth=k_w)
-                cv2.imwrite(self.combine_name(self.path + "/" + imageFile, "edges"), img)
-        else:
-            img = cv2.imread(self.path, -1)
-            img = self.edgeDetector.getImageBluryEdgesFromNumpy(img, kernelHeight=k_h, kernelWidth=k_w)
-            cv2.imwrite(self.combine_name(self.path, "edges"), img)
+        self.process_image(self.edgeDetector.getImageBluryEdgesFromNumpy, "BlurryEdges", k_h, k_w)
 
-    def edge_images_from(self, k_h, kw):
-        if self.is_given_path_a_dir():
-            image_files = self.get_image_files_from_directory()
-            for imageFile in image_files:
-                img = cv2.imread(self.path + "/" + imageFile, -1)
-                img = self.edgeDetector.getImageEdgesFromNumpy(img, kernelHeight=k_h, kernelWidth=kw)
-                cv2.imwrite(self.combine_name(self.path + "/" + imageFile, "edges"), img)
-        else:
-            img = cv2.imread(self.path, -1)
-            img = self.edgeDetector.getImageEdgesFromNumpy(img, kernelHeight=k_h, kernelWidth=kw)
-            cv2.imwrite(self.combine_name(self.path, "edges"), img)
+    def process_image(self, function, new_folder_name, k_h, k_w):
+        images = self.load_images_from_path()
+        new_path = self.path + "/" + new_folder_name
+        os.mkdir(new_path)
+        cont = 0
+        for image in images:
+            img = function(image, kernelHeight=k_h, kernelWidth=k_w)
+            cv2.imwrite(new_path + "/" + str(cont) + ".jpg", img)
+            cont += 1
+
+    def edge_images_from(self, k_h, k_w):
+        self.process_image(self.edgeDetector.getImageEdgesFromNumpy, "Edges", k_h, k_w)
 
     def rescale_images_from(self, width=0, height=0):
         if width is 0:

@@ -24,7 +24,7 @@ def mlp_single_images():
     }
 
     mlp = MLPTester(MLPTester.SINGLE_IMAGE, folders, switcher, full_path_train, full_path_test)
-    mlp.start()
+    mlp.in_test_model_single()
 
 
 def mlp():
@@ -111,4 +111,4 @@ def test():
         print(prediction)
 
 
-mlp()
+mlp_single_images()
