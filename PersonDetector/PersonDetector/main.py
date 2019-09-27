@@ -118,21 +118,22 @@ def process_video_cutter():
         i += 1
     print("Word Luz complete")
 
-
-def on_the_fly_calibration():
-    img = cv2.imread("C:/Users/Jp/Desktop/Gestos/ADIOS/VID_20190728_145655/VID_20190728_1456554.jpg")
-    while True:
-        proc = EdgeDetector(800)
-        kh = int(input("new kernel height: "))
-        kw = int(input("new kernel width: "))
-        new_img = proc.getImageBluryEdgesFromNumpy(img, kernelHeight=kh, kernelWidth=kw)
-        cv2.imshow("Calibration", new_img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        answer = input("Are you done with the values? (y/n): ")
-        if answer is 'y':
-            break
-
-
 #process_image(500)
-HaarCascadeProcessor.process("C:/Users/Jp/Downloads/jato.jpeg")
+HOLA = "HOLA"
+AUTO = "AUTO"
+CAFE = "CAFE"
+ADIOS = "ADIOS"
+GRACIAS = "GRACIAS"
+CBBA = "CBBA"
+CUAL = "CUAL"
+POR_FAVOR = "POR_FAVOR"
+QUERER = "QUERER"
+YO = "YO"
+folders = [HOLA, AUTO, CAFE, ADIOS, GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER, YO]
+path = "C:/Users/Jp/Desktop/Gestos/"
+
+
+for index in range(1, 12):
+    in_path = path + CAFE + "/" + str(index)
+    haar = HaarCascadeProcessor()
+    haar.process_from(in_path)

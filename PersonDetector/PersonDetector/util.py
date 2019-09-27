@@ -10,7 +10,7 @@ def combineImages(array):
     return finalImage
 
 def saveImage(npImage, imageName, extension):
-    cv2.imwrite(imageName +  extension, npImage)
+    cv2.imwrite(imageName + extension, npImage)
 
 def saveImageToPath(npImage, imageName, extension, path):
     cv2.imwrite(os.path.join(path , imageName +  extension), npImage)
