@@ -132,8 +132,8 @@ YO = "YO"
 folders = [HOLA, AUTO, CAFE, ADIOS, GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER, YO]
 path = "C:/Users/Jp/Desktop/Gestos/"
 
-
-for index in range(1, 12):
-    in_path = path + CAFE + "/" + str(index)
-    haar = HaarCascadeProcessor()
-    haar.process_from(in_path)
+for folder in folders:
+    for index in range(1, 12):
+        in_path = path + folder + "/" + str(index)
+        haar = HaarCascadeProcessor()
+        haar.process_from(in_path)
