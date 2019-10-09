@@ -140,15 +140,15 @@ class MLPTester:
     def in_test_model_single(self):
         train, train_labels, test, test_labels = self.load_set()
         over_all_history = []
-        activation_functions = [tf.nn.sigmoid, tf.nn.relu]
+        activation_functions = [tf.nn.sigmoid, tf.nn.relu, tf.nn.tanh]
         cont = 1
         for neurons_outer in range(5, 25):
             for activation_function in activation_functions:
-                for iteration in [10, 15, 20, 30, 50, 80]:
+                for iteration in [10, 15, 20, 30, 50, 80, 100, 120, 140]:
                     model = keras.Sequential([
                         keras.layers.Flatten(input_shape=(300, 300)),
                         keras.layers.Dense(neurons_outer, activation=activation_function),
-                        keras.layers.Dense(5, activation=tf.nn.softmax)
+                        keras.layers.Dense(3, activation=tf.nn.softmax)
                     ])
                     model.compile(optimizer='adam',
                                   loss='sparse_categorical_crossentropy',
