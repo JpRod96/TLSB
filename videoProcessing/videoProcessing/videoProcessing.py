@@ -4,7 +4,7 @@ from sklearn.metrics import pairwise
 from keras.models import load_model
 from keras.preprocessing import image
 
-model = load_model('gestos3.h5')
+model = load_model('gestos2.h5')
 background = None
 accumulated_weight = 0.5
 roi_top = 30
@@ -47,10 +47,12 @@ def recognition(thresholded):
 
 def getWord(word):
     switcher = {
-        0: "BANO",
-        1: "BUENOS DIAS",
-        2: "HOLA",
-        3: "LUZ",
+        0: "HOLA",
+        1: "LA",
+        2: "YO",
+        3: "QUERER",
+        4: "RER",
+        5: "CAFE",
     }
     return switcher.get(word)
 
@@ -66,7 +68,7 @@ while True:
     frame_copy = frame.copy()    
     roi = frame[roi_top:roi_bottom,roi_right:roi_left]
     gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-    gray = cv2.blur(gray,(3,3))
+    gray = cv2.GaussianBlur(gray,(1,3), 0)
     # OBTENER FONDO
     #if num_frames < 60:
     #    calc_accum_avg(gray,accumulated_weight)
@@ -87,11 +89,11 @@ while True:
         med_val = np.median(gray)
         lower = int(max(0,0.7*med_val))
         upper = int(min(255,1.3*med_val))
-        canny = cv2.Canny(gray, lower, upper)
+        canny = cv2.Canny(gray, lower,upper)
         cv2.imwrite("predc.jpg", canny)
         prediction, probability = recognition(canny)
 
-        if probability > 0.85:
+        if probability > 0.70:
             print(probability)
             word = getWord(prediction[0])
             cv2.putText(frame_copy, word, (70, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0), 5)

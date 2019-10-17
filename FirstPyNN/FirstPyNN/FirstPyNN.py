@@ -32,7 +32,7 @@ model.add(Flatten())
 model.add(Dense(256))
 model.add(Activation('relu'))
 model.add(Dropout(0.5))
-model.add(Dense(4))
+model.add(Dense(6))
 model.add(Activation('sigmoid'))
 
 model.compile(optimizer='adam', 
@@ -45,12 +45,12 @@ model.compile(optimizer='adam',
 #    keras.layers.Dense(4, activation=tf.nn.softmax)
 #])
 
-result = model.fit_generator(train, epochs=4, steps_per_epoch=50,
+result = model.fit_generator(train, epochs=5, steps_per_epoch=50,
           validation_data=test, validation_steps= 12 )
 
 print(result.history["acc"])
 
-save_model(model,'gestosbyw.h5')
+save_model(model,'gestos2.h5')
 #print(tf.__version__)
 
 #fashion_mnist = keras.datasets.fashion_mnist
