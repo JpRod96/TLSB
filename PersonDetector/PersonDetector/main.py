@@ -10,17 +10,17 @@ from HaarCascadeProcessor import HaarCascadeProcessor
 
 def process_image(pic_size):
     # ejemplo Image processor
-    path = "C:/Users/Jp/Desktop/Gestos/CAFE/20190805_161744"
+    path = "C:/Users/Jp/Desktop/brazo/bg"
     aug = ImageDataGenerator(
-        rotation_range=3,
-        zoom_range=0.10,
-        width_shift_range=0.1,
-        height_shift_range=0.1,
-        shear_range=0.15,
+        rotation_range=10,
+        zoom_range=0.20,
+        width_shift_range=0.25,
+        height_shift_range=0.25,
+        shear_range=0.20,
         fill_mode="nearest")
     image_processor = ImageProcessor(pic_size, path)
-    # image_processor.augment_images_from(aug, 10)
-    image_processor.get_strip_from(image_filter=2, strip_length=5, aug=(aug, 4))
+    image_processor.augment_images_from(aug, 60)
+    # image_processor.get_strip_from(image_filter=2, strip_length=5, aug=(aug, 4))
 
 
 def process_video_motion(folders, pic_size, combine_images, img_filter, frames_nro, path):
@@ -118,22 +118,6 @@ def process_video_cutter():
         i += 1
     print("Word Luz complete")
 
-#process_image(500)
-HOLA = "HOLA"
-AUTO = "AUTO"
-CAFE = "CAFE"
-ADIOS = "ADIOS"
-GRACIAS = "GRACIAS"
-CBBA = "CBBA"
-CUAL = "CUAL"
-POR_FAVOR = "POR_FAVOR"
-QUERER = "QUERER"
-YO = "YO"
-folders = [HOLA, AUTO, CAFE, ADIOS, GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER, YO]
-path = "C:/Users/Jp/Desktop/Gestos/"
 
-for folder in folders:
-    for index in range(1, 12):
-        in_path = path + folder + "/" + str(index)
-        haar = HaarCascadeProcessor()
-        haar.process_from(in_path)
+haar = HaarCascadeProcessor()
+#haar.process_from("C:/Users/Jp/Desktop/Gestos/HOLA/10")

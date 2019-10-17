@@ -22,9 +22,9 @@ class VideoProcessManager:
         if self.isGivenPathADir(path) :
             videoFiles = self.getVideoFilesFromDirectory(path)
             for videoFile in videoFiles:
-                self.videoProcessor.process(path + "/" + videoFile)
+                self.videoProcessor.process_from_path(path + "/" + videoFile)
         else :
-            self.videoProcessor.process(path)
+            self.videoProcessor.process_from_path(path)
 
     def getVideoFilesFromDirectory(self, path):
         files = [f for f in listdir(path) if isfile(join(path, f))]
