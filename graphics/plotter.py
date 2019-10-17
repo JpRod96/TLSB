@@ -13,7 +13,7 @@ import util
 
 class Plotter:
     TXT_EXTENSION = 'txt'
-    TEST_SIZE = 4
+    TEST_SIZE = 6
 
     def is_given_file_txt_file(self, file):
         final_token = util.getLastTokenOfPath(file)
@@ -100,7 +100,7 @@ class Plotter:
         plt.plot(history)
         plt.ylabel('accuracy')
         plt.xlabel('N epochs')
-        plt.xticks(np.arange(self.TEST_SIZE), (15, 20, 50, 80))
+        plt.xticks(np.arange(self.TEST_SIZE), (10, 15, 20, 30, 50, 80))
         plt.ylim(0, 100)
         plt.grid(b=True)
         plt.suptitle(title)
@@ -162,7 +162,7 @@ class Plotter:
         return history
 
     def find_neurons_from_segment(self, segment):
-        first_instance = 7
+        first_instance = 8
         neurons = []
         index = first_instance
         while True:
