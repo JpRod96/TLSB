@@ -5,26 +5,32 @@ from MLP import MLPTester
 
 
 def mlp_single_images():
-    full_path_train = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBA/train/"
-    full_path_test = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBA/test/"
+    full_path_train = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETGESTO/train/"
+    full_path_test = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETGESTO/test/"
 
-    GESTO1_VALUE = 0
-    GESTO2_VALUE = 1
-    GESTO3_VALUE = 2
+    GESTO0_VALUE = 0
+    GESTO1_VALUE = 1
+    GESTO2_VALUE = 2
+    GESTO3_VALUE = 3
+    GESTO4_VALUE = 4
 
+    GESTO0 = "gesto0"
     GESTO1 = "gesto1"
     GESTO2 = "gesto2"
     GESTO3 = "gesto3"
+    GESTO4 = "gesto4"
 
-    folders = [GESTO1, GESTO2, GESTO3]
+    folders = [GESTO0, GESTO1, GESTO2, GESTO3, GESTO4]
     switcher = {
+        GESTO0: GESTO0_VALUE,
         GESTO1: GESTO1_VALUE,
         GESTO2: GESTO2_VALUE,
-        GESTO3: GESTO3_VALUE
+        GESTO3: GESTO3_VALUE,
+        GESTO4: GESTO4_VALUE
     }
 
     mlp = MLPTester(MLPTester.SINGLE_IMAGE, folders, switcher, full_path_train, full_path_test)
-    mlp.in_test_model_single()
+    mlp.in_test_model_single2()
 
 
 def mlp():
@@ -85,20 +91,18 @@ def mlp():
 
 
 def test():
-    GRACIAS = "GRACIAS"
-    CBBA = "CBBA"
-    CUAL = "CUAL"
-    POR_FAVOR = "POR_FAVOR"
-    QUERER = "QUERER"
+    GESTO1 = "gesto1"
+    GESTO2 = "gesto2"
+    GESTO3 = "gesto3"
 
-    values = [GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER]
+    values = [GESTO1, GESTO2, GESTO3]
 
-    new_model = keras.models.load_model('testModel.h5')
+    new_model = keras.models.load_model('D:/desktop/TLSB/FirstPyNN/FirstPyNN/MLP/bestModel75.h5')
     new_model.summary()
 
-    img = cv2.imread("D:/desktop/DATASET/CBBA/20190908_185548Edges.jpg", cv2.IMREAD_GRAYSCALE)
-    img1 = cv2.imread("D:/desktop/DATASET/CUAL/20190908_185032Edges.jpg", cv2.IMREAD_GRAYSCALE)
-    img2 = cv2.imread("D:/desktop/DATASET/GRACIAS/20190908_185856Edges.jpg", cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread("D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBAORIGINAL/train/gesto1/0.jpg", cv2.IMREAD_GRAYSCALE)
+    img1 = cv2.imread("D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBAORIGINAL/train/gesto2/0.jpg", cv2.IMREAD_GRAYSCALE)
+    img2 = cv2.imread("D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETCBBAORIGINAL/train/gesto3/0.jpg", cv2.IMREAD_GRAYSCALE)
     test_image = [img, img1, img2]
 
     final_data_set = np.array(test_image)

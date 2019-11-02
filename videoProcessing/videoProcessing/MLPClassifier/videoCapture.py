@@ -4,6 +4,7 @@ import cv2
 class VideoCapture:
 
     def capture_from_file(self, path, processor=None, classifier=None):
+        evolution = []
         cap = cv2.VideoCapture(path)
         while cap.isOpened():
             ret, frame = cap.read()
@@ -15,13 +16,16 @@ class VideoCapture:
             else:
                 treated = frame
             if classifier is not None:
-                classifier.predict(treated)
+                prediction = classifier.predict(treated)
+                if prediction is not None:
+                    evolution.append(prediction)
             cv2.imshow('frame', treated)
             cv2.imshow('not', frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
         cap.release()
         cv2.destroyAllWindows()
+        return evolution
 
     def capture_from_camera(self, processor=None, classifier=None):
         cap = cv2.VideoCapture(0)

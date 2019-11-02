@@ -120,8 +120,8 @@ class VideoMotionProcessor(VideoProcessorI):
             if self.rotateImages:
                 frame = ndimage.rotate(frame, 270)
             try:
-                frame = self.detector.detectPersonFromNumpy(frame)
                 if self.picSize > 0:
+                    frame = self.detector.detectPersonFromNumpy(frame)
                     frame = self.apply_filter(frame)
                 print("Done.\n")
                 cv2.imwrite(file_name + ".jpg", frame)

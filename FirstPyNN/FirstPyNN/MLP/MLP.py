@@ -137,14 +137,55 @@ class MLPTester:
                         cont += 1
         self.save_test_to_txt(over_all_history)
 
+    def in_test_model_single2(self):
+        train, train_labels, test, test_labels = self.load_set()
+        over_all_history = []
+        activation_functions = [tf.nn.sigmoid]
+        cont = 1
+        for neurons_outer in range(16, 30):
+            for activation_function in activation_functions:
+                for iteration in [30, 60, 100, 150]:
+                    model = keras.Sequential([
+                        keras.layers.Flatten(input_shape=(300, 300)),
+                        keras.layers.Dense(neurons_outer, activation=activation_function),
+                        keras.layers.Dense(5, activation=tf.nn.softmax)
+                    ])
+                    model.compile(optimizer='adam',
+                                  loss='sparse_categorical_crossentropy',
+                                  metrics=['accuracy'])
+                    weights = model.get_weights()
+                    over_all_history.append(
+                        "--------------------------------------------------------------------------------------------------------")
+                    over_all_history.append("test No: " + str(cont))
+                    over_all_history.append("iteraciones: " + str(iteration))
+                    string_list = []
+                    model.summary(print_fn=lambda x: string_list.append(x))
+                    short_model_summary = "\n".join(string_list)
+                    over_all_history.append(short_model_summary)
+                    if activation_function is tf.nn.relu:
+                        over_all_history.append("Rectilineo \n")
+                        print("rectilineo")
+                    else:
+                        over_all_history.append("Sigmoidal \n")
+                        print("sigmoidal")
+                    results = []
+                    for index in range(0, 1):
+                        model_accuracy, history = self.train_model(model, train, train_labels, test, test_labels,
+                                                                   iteration,
+                                                                   weights)
+                        results.append((model_accuracy, history.history))
+                    over_all_history.append(results)
+                    cont += 1
+        self.save_test_to_txt(over_all_history)
+
     def in_test_model_single(self):
         train, train_labels, test, test_labels = self.load_set()
         over_all_history = []
         activation_functions = [tf.nn.sigmoid, tf.nn.relu, tf.nn.tanh]
         cont = 1
-        for neurons_outer in range(5, 25):
+        for neurons_outer in range(10, 30, 3):
             for activation_function in activation_functions:
-                for iteration in [10, 15, 20, 30, 50, 80, 100, 120, 140]:
+                for iteration in [30, 60, 100, 130, 160]:
                     model = keras.Sequential([
                         keras.layers.Flatten(input_shape=(300, 300)),
                         keras.layers.Dense(neurons_outer, activation=activation_function),

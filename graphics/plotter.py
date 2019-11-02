@@ -13,13 +13,18 @@ import util
 
 class Plotter:
     TXT_EXTENSION = 'txt'
-    TEST_SIZE = 6
+    TEST_SIZE = 5
+    global_counter = 0
+
+    def __init__(self, switcher):
+        self.switcher = switcher
 
     def is_given_file_txt_file(self, file):
         final_token = util.getLastTokenOfPath(file)
         return final_token[1] == self.TXT_EXTENSION
 
-    def is_given_path_a_dir(self, path):
+    @staticmethod
+    def is_given_path_a_dir(path):
         final_token = util.getLastTokenOfPath(path)
         return len(final_token) == 1
 
@@ -67,6 +72,7 @@ class Plotter:
             else:
                 test_segment.append(actual_line)
         test_segments.append(test_segment)
+        print(len(test_segments))
         return test_segments
 
     def process_segments(self, segments, file_name, getter_function):
@@ -75,24 +81,22 @@ class Plotter:
             self.plot(descriptor, history, file_name + str(index))
 
     def process_for_neurons(self, segments, file_name):
-        sigmoid, relu = self.filter_segments(segments)
-        to_plot = [sigmoid, relu]
+        to_plot = self.filter_segments(segments)
         for index in range(0, len(to_plot)):
-            function_name = "sigmoidal" if index % 2 is 0 else "rectilineo"
+            function_name = self.get_function_name()
             self.process_segment_for_neurons(to_plot[index], function_name, file_name)
 
-    @staticmethod
-    def filter_segments(segments):
-        sigmoid = []
-        relu = []
+    def filter_segments(self, segments):
+        filtered = []
+        for x in range(0, len(self.switcher)):
+            filtered.append([])
         cont = 0
         for segment in segments:
-            if cont % 2 is 0:
-                sigmoid.append(segment)
-            else:
-                relu.append(segment)
             cont += 1
-        return sigmoid, relu
+            filtered[cont - 1].append(segment)
+            if cont is len(self.switcher):
+                cont = 0
+        return filtered
 
     def plot(self, title, history, file_name):
         fig = plt.figure(figsize=(5, 5))
@@ -100,7 +104,7 @@ class Plotter:
         plt.plot(history)
         plt.ylabel('accuracy')
         plt.xlabel('N epochs')
-        plt.xticks(np.arange(self.TEST_SIZE), (10, 15, 20, 30, 50, 80))
+        plt.xticks(np.arange(self.TEST_SIZE), (30, 60, 100, 130, 160))
         plt.ylim(0, 100)
         plt.grid(b=True)
         plt.suptitle(title)
@@ -109,11 +113,18 @@ class Plotter:
 
     def process_segment_for_function(self, segment, index):
         arq = self.find_neurons_from_segment(segment)
-        function = "Sigmoidal" if index % 2 is 0 else "Rectilineo"
+        function = self.get_function_name()
         descriptor = (arq, function)
         history = self.get_accuracy_history_of(segment)
 
         return descriptor, history
+
+    def get_function_name(self):
+        self.global_counter += 1
+        value = self.switcher.get(self.global_counter, 1)
+        if self.global_counter >= len(self.switcher):
+            self.global_counter = 0
+        return value
 
     def process_segment_for_neurons(self, array, function_name, file_name):
         neurons = self.get_neurons_array(array)

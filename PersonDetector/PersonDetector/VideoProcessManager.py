@@ -19,12 +19,12 @@ class VideoProcessManager:
         return len(finalToken) == 1
     
     def processPath(self, path):
-        if self.isGivenPathADir(path) :
+        if self.isGivenPathADir(path):
             videoFiles = self.getVideoFilesFromDirectory(path)
             for videoFile in videoFiles:
-                self.videoProcessor.process_from_path(path + "/" + videoFile)
-        else :
-            self.videoProcessor.process_from_path(path)
+                self.videoProcessor.process(path + "/" + videoFile)
+        else:
+            self.videoProcessor.process(path)
 
     def getVideoFilesFromDirectory(self, path):
         files = [f for f in listdir(path) if isfile(join(path, f))]

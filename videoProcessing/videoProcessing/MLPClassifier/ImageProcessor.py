@@ -17,6 +17,7 @@ class ImageProcessor:
     def process(self, image):
         if self.image_final_size > 0:
             image = self.rescale(image)
+
         if self.process_type is self.BLURRY_EDGES:
             return self.get_image_blurry_edges(image)
         elif self.process_type is self.EDGES:

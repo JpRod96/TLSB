@@ -10,17 +10,21 @@ from HaarCascadeProcessor import HaarCascadeProcessor
 
 def process_image(pic_size):
     # ejemplo Image processor
-    path = "C:/Users/Jp/Desktop/brazo/bg"
+    path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETGESTO/ORIGINAL/gesto0"
     aug = ImageDataGenerator(
-        rotation_range=10,
-        zoom_range=0.20,
-        width_shift_range=0.25,
-        height_shift_range=0.25,
-        shear_range=0.20,
+        rotation_range=3,
+        zoom_range=0.05,
+        width_shift_range=0.09,
+        height_shift_range=0.09,
+        shear_range=0.10,
         fill_mode="nearest")
     image_processor = ImageProcessor(pic_size, path)
+    image_processor.rescale_images_from()
+    path += "/rescaled"
+    image_processor.path = path
     image_processor.augment_images_from(aug, 60)
-    # image_processor.get_strip_from(image_filter=2, strip_length=5, aug=(aug, 4))
+    image_processor.blurred_edge_images_from(k_h=4, k_w=4)
+    #image_processor.get_strip_from(image_filter=2, strip_length=5, aug=(aug, 4))
 
 
 def process_video_motion(folders, pic_size, combine_images, img_filter, frames_nro, path):
@@ -33,17 +37,18 @@ def process_video_motion(folders, pic_size, combine_images, img_filter, frames_n
         fill_mode="nearest")  # procesador de aumento de datos para inyectar al procesador de video, solo se usa al generar tiras
 
     video_processor = VideoMotionProcessor(pic_size, combine_images, img_filter=img_filter,
-                                           frames_nr=frames_nro,
-                                           aug_processor=aug)  # consultar el constructor de la clase
+                                           frames_nr=frames_nro)  # consultar el constructor de la clase
     vid = VideoProcessManager(video_processor)
     for folder in folders:
-        vid.processPath(path + folder)
+        vid.processPath(path + folder + "/" + "nuevo")
+        """
         # rotando y cambiando el filtro a edges para la carpeta que yo tengo en el que los videos estan en portrait (verticales/parados)
         video_processor.rotateImages = True
         video_processor.imageFilter = 'Edges'
         vid = VideoProcessManager(video_processor)
         vid.processPath(
             path + folder + "/rotar")  # los videos en portrait estan en una carpeta rotar dentro de cada una de las carpetas, esto dentro de mi dataset local
+        """
 
 
 def setup_variables_for_motion_detector():
@@ -58,9 +63,9 @@ def setup_variables_for_motion_detector():
     QUERER = "QUERER"
     YO = "YO"
 
-    folders = [CBBA]
+    folders = [HOLA, AUTO, CAFE, ADIOS, GRACIAS, CBBA, CUAL, POR_FAVOR, QUERER, YO]
     frames_nro = 5
-    pic_size = 500
+    pic_size = 0
     combine_images = False
     """
     tipos de filtros para img_filter
@@ -75,8 +80,8 @@ def setup_variables_for_motion_detector():
                           ejemplo: 'Blury_Edges', usara un kernel de 5x5 
                           Al final se devuelve un imagen en escala de grises con los bordes detectados
     """
-    img_filter = 'Blurry_Edges 4 4'
-    path = "D:/desktop/DATASET/"
+    img_filter = 'None'
+    path = "D:/desktop/DATASET/2/"
 
     process_video_motion(folders, pic_size, combine_images, img_filter, frames_nro, path)
 
@@ -119,5 +124,4 @@ def process_video_cutter():
     print("Word Luz complete")
 
 
-haar = HaarCascadeProcessor()
-#haar.process_from("C:/Users/Jp/Desktop/Gestos/HOLA/10")
+process_image(300)
