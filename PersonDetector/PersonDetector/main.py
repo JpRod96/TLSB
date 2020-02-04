@@ -10,7 +10,7 @@ from HaarCascadeProcessor import HaarCascadeProcessor
 
 def process_image(pic_size):
     # ejemplo Image processor
-    path = "C:/Users/Jp/Desktop/datafeik"
+    path = "C:/Users/Jp/Desktop/Gestos/ADIOS/1" #path a una carpeta con las imagenes que conformaran la tira
     aug = ImageDataGenerator(
         zoom_range=0.15,
         shear_range=0.10,
@@ -21,7 +21,10 @@ def process_image(pic_size):
     #image_processor.path = path
     #image_processor.augment_images_from(aug, 10)
     #image_processor.blurred_edge_images_from(k_h=1, k_w=1)
-    image_processor.get_strip_from(image_filter=2, strip_length=5)
+    number_copies = 10
+    image_processor.get_strip_from(image_filter=image_processor.EDGES, #image_filter=image_processor.BLURRY_EDGES puede ser tambien este, este ultimo difumina mas
+                                   strip_length=5, #el largo de la tira, siempre trabaje con 5 de largo
+                                   aug=(aug, number_copies)) #inyeccion para data augmentation, (objeto, numero de copias)
 
 
 def process_video_motion(folders, pic_size, combine_images, img_filter, frames_nro, path):

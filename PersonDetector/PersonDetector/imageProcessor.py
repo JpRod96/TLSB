@@ -106,12 +106,15 @@ class ImageProcessor:
             cv2.imwrite(self.path + "/rescaled/" + str(cont) + ".jpg", resized_img)
             cont += 1
 
-    def get_strip_from(self, strip_length=0, aug=(None, 0), image_filter=0):
+    def get_strip_from(self, strip_length=0, aug=(None, 0), image_filter=0, otfc=False, k_h=5, k_w=5):
         images = self.load_images_from_path()
         aug_processor, augmented_size = aug
 
         os.mkdir(self.path + "/strips")
-        kh, kw = self.on_the_fly_calibration(images[0], image_filter)
+        if otfc is True:
+            kh, kw = self.on_the_fly_calibration(images[0], image_filter)
+        else:
+            kh, kw = (k_h, k_w)
         strip = self.satisfy_frames_number(self.apply_filter(images, image_filter, kh=kh, kw=kw), strip_length)
         if aug_processor is None:
             file_name = self.path + "/strips/originalStrip." + self.JPG_EXTENSION
