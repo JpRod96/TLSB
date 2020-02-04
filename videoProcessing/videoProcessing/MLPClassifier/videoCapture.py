@@ -3,7 +3,7 @@ import cv2
 
 class VideoCapture:
 
-    def capture_from_file(self, path, processor=None, classifier=None):
+    def capture_from_file(self, path, processor=None, classifier=None, duplicate=False):
         evolution = []
         cap = cv2.VideoCapture(path)
         while cap.isOpened():
@@ -19,7 +19,8 @@ class VideoCapture:
                 prediction = classifier.predict(treated)
                 if prediction is not None:
                     evolution.append(prediction)
-            cv2.imshow('frame', treated)
+            if duplicate:
+                cv2.imshow('frame', treated)
             cv2.imshow('not', frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break

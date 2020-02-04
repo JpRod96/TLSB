@@ -10,21 +10,18 @@ from HaarCascadeProcessor import HaarCascadeProcessor
 
 def process_image(pic_size):
     # ejemplo Image processor
-    path = "D:/desktop/TLSB/FirstPyNN/FirstPyNN/DATASETGESTO/ORIGINAL/gesto0"
+    path = "C:/Users/Jp/Desktop/datafeik"
     aug = ImageDataGenerator(
-        rotation_range=3,
-        zoom_range=0.05,
-        width_shift_range=0.09,
-        height_shift_range=0.09,
+        zoom_range=0.15,
         shear_range=0.10,
         fill_mode="nearest")
     image_processor = ImageProcessor(pic_size, path)
-    image_processor.rescale_images_from()
-    path += "/rescaled"
-    image_processor.path = path
-    image_processor.augment_images_from(aug, 60)
-    image_processor.blurred_edge_images_from(k_h=4, k_w=4)
-    #image_processor.get_strip_from(image_filter=2, strip_length=5, aug=(aug, 4))
+    #image_processor.rescale_images_from()
+    #path += "/rescaled"
+    #image_processor.path = path
+    #image_processor.augment_images_from(aug, 10)
+    #image_processor.blurred_edge_images_from(k_h=1, k_w=1)
+    image_processor.get_strip_from(image_filter=2, strip_length=5)
 
 
 def process_video_motion(folders, pic_size, combine_images, img_filter, frames_nro, path):
@@ -87,41 +84,15 @@ def setup_variables_for_motion_detector():
 
 
 def process_video_cutter():
-    frames_nro = 0
-    pic_size = 300
-    rotate = True
+    frames_nro = 5
+    pic_size = 800
+    rotate = False
     type_of_cut = "Constant"  # o 'Probabilistic'
 
     video_processor = VideoCutterProcessor(frames_nro, pic_size, rotate,
                                            type_of_cut)  # procesador de corte sin heuristica
     vid = VideoProcessManager(video_processor)
-    i = 1
-    print("Generating edges of images for word Bano")
-    while i < 6:
-        vid.processPath("D:/VideosDataset/BANO" + str(i))
-        i += 1
-    print("Word Bathroom complete")
-
-    i = 1
-    print("Generating edges of images for word BuenosDias")
-    while i < 6:
-        vid.processPath("D:/VideosDataset/BUENOSDIAS" + str(i))
-        i += 1
-    print("Word BuenosDias complete")
-
-    i = 1
-    print("Generating edges of images for word Hola")
-    while i < 6:
-        vid.processPath("D:/VideosDataset/HOLA" + str(i))
-        i += 1
-    print("Word Hola complete")
-
-    i = 1
-    print("Generating edges of images for word Luz")
-    while i < 6:
-        vid.processPath("D:/VideosDataset/LUZ" + str(i))
-        i += 1
-    print("Word Luz complete")
+    vid.processPath("D:/desktop/DATASET/GRACIAS/20190805_160622.mp4")
 
 
-process_image(300)
+process_image(500)

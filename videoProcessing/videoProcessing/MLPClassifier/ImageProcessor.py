@@ -6,6 +6,7 @@ class ImageProcessor:
 
     BLURRY_EDGES = 1
     EDGES = 2
+    HAAR = 3
 
     def __init__(self, image_final_size, crop_size, kernel_height=5, kernel_width=5, process_type=EDGES):
         self.image_final_size = image_final_size
@@ -22,6 +23,8 @@ class ImageProcessor:
             return self.get_image_blurry_edges(image)
         elif self.process_type is self.EDGES:
             return self.get_image_edges(image)
+        elif self.process_type is self.HAAR:
+            return
         else:
             return image
 
@@ -41,3 +44,6 @@ class ImageProcessor:
         gauss = cv2.GaussianBlur(gray, (self.kernel_height, self.kernel_width), 0)
         canny = cv2.Canny(gauss, 30, 90)
         return canny
+
+
+

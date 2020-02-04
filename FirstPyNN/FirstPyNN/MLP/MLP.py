@@ -142,13 +142,13 @@ class MLPTester:
         over_all_history = []
         activation_functions = [tf.nn.sigmoid]
         cont = 1
-        for neurons_outer in range(16, 30):
+        for neurons_outer in range(10, 11):
             for activation_function in activation_functions:
-                for iteration in [30, 60, 100, 150]:
+                for iteration in [10, 30, 60, 100, 150]:
                     model = keras.Sequential([
-                        keras.layers.Flatten(input_shape=(300, 300)),
+                        keras.layers.Flatten(input_shape=(20, 20)),
                         keras.layers.Dense(neurons_outer, activation=activation_function),
-                        keras.layers.Dense(5, activation=tf.nn.softmax)
+                        keras.layers.Dense(10, activation=tf.nn.softmax)
                     ])
                     model.compile(optimizer='adam',
                                   loss='sparse_categorical_crossentropy',

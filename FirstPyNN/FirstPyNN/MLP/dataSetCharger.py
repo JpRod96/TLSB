@@ -9,11 +9,14 @@ class DataSetCharger:
     def charge_folder_content_as_image_strip(self, data_set, path, labels, value, flatten):
         for filename in os.listdir(path):
             img = cv2.imread(path + "/" + filename, cv2.IMREAD_GRAYSCALE)
+
             if img is not None:
                 if flatten:
                     data_set.append(self.to_binary_set(img))
                 else:
+                    img = cv2.resize(img, (20, 20))
                     data_set.append(img)
+                    print(len(data_set))
                 labels.append(value)
 
     def charge_folder_content_as_lbp(self, data_set, path, labels, value, num_points, radius):

@@ -43,7 +43,7 @@ class VideoCutterProcessor(VideoProcessorI):
             print("Processing frame number "+ str(x) +"...")
             try:
                 treatedImage = self.detector.detectPersonFromNumpy(frame)
-                edgeImages.append(self.edgeDetector.getImageEdgesFromNumpy(treatedImage))
+                edgeImages.append(self.edgeDetector.getImageBluryEdgesFromNumpy(treatedImage))
                 print("Done.\n")
             except:
                 print("Human not found on frame number "+ str(x))
